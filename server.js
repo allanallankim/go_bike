@@ -32,7 +32,10 @@ const server = http.createServer(async (req, res) => {
     const lat = Number(requestUrl.searchParams.get('lat')); const lon = Number(requestUrl.searchParams.get('lon'));
     if (!requestUrl.searchParams.get('lat')?.trim() || !requestUrl.searchParams.get('lon')?.trim() || !Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) return sendJson(res, 400, { error:'올바른 좌표가 필요합니다.' });
     try { return sendJson(res, 200, await weather(lat, lon)); }
-    catch { return sendJson(res, 502, { error:'날씨 정보를 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.' }); }
+    catch (error) {
+      console.error('Weather upstream failure:', error.message, error.cause?.code || error.code || error.name);
+      return sendJson(res, 502, { error:'날씨 정보를 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.' });
+    }
   }
   const relative = requestUrl.pathname === '/' ? 'index_좌표선택_지명검색_개선본2.html' : decodeURIComponent(requestUrl.pathname).replace(/^[/\\]+/, '');
   const target = path.resolve(root, relative);

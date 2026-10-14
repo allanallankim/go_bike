@@ -1529,6 +1529,36 @@
       return [speed, speedKmh === 0 ? '무풍' : direction];
     }
 
+    async function fetchRouteWeather(point, signal) {
+      const serverParams = new URLSearchParams({ lat: point.lat, lon: point.lng });
+      const directParams = new URLSearchParams({
+        latitude: point.lat, longitude: point.lng,
+        current: 'temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m',
+        hourly: 'temperature_2m,weather_code,precipitation_probability,wind_speed_10m,wind_direction_10m',
+        wind_speed_unit: 'kmh', forecast_days: '2', timezone: 'Asia/Seoul'
+      });
+      const urls = [`/api/weather?${serverParams}`, `https://api.open-meteo.com/v1/forecast?${directParams}`];
+      for (let attempt = 0; attempt < urls.length; attempt++) {
+        if (signal.aborted) throw new DOMException('조회가 취소되었습니다.', 'AbortError');
+        const controller = new AbortController();
+        const cancel = () => controller.abort();
+        signal.addEventListener('abort', cancel, { once: true });
+        const timer = setTimeout(cancel, 9500);
+        try {
+          const response = await fetch(urls[attempt], { signal: controller.signal });
+          if (!response.ok) throw new Error(`날씨 조회 실패 (${response.status})`);
+          const data = await response.json();
+          if (!Array.isArray(data.hourly?.time) || !Array.isArray(data.hourly?.temperature_2m)) throw new Error('날씨 응답 형식을 확인할 수 없습니다.');
+          return data;
+        } catch (error) {
+          if (signal.aborted || attempt === urls.length - 1) throw error;
+        } finally {
+          clearTimeout(timer);
+          signal.removeEventListener('abort', cancel);
+        }
+      }
+    }
+
     async function updatePointWeather(kind, point, force = false) {
       const container = document.getElementById(`${kind}Weather`);
       const label = kind === 'start' ? '출발지' : '도착지';
@@ -1561,15 +1591,9 @@
       container.append(heading, message);
       const controller = state.controller = new AbortController();
       state.loading = true;
-      const timeout = setTimeout(() => controller.abort(), 12000);
+      const timeout = setTimeout(() => controller.abort(), 22000);
       try {
-        const params = new URLSearchParams({ lat: point.lat, lon: point.lng });
-        const response = await fetch(`/api/weather?${params}`, { signal: controller.signal });
-        if (!response.ok) {
-          const failure = await response.json().catch(() => ({}));
-          throw new Error(failure.error || '날씨 서버 응답을 확인할 수 없습니다.');
-        }
-        const data = await response.json();
+        const data = await fetchRouteWeather(point, controller.signal);
         if (state.token !== token) return;
         const hourly = data.hourly;
         // API timestamps are Korean local time, independent of the browser timezone.
