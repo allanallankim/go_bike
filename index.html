@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="지역별 현재 날씨와 시간대별 예보를 확인하세요." />
+    <title>오늘의 하늘 | 지역 날씨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Gowun+Dodum&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="오늘의 하늘 홈">
+          <span class="brand-mark">☼</span>
+          <span>오늘의 하늘</span>
+        </a>
+        <div class="live-status"><i></i> LIVE WEATHER</div>
+      </header>
+
+      <section class="hero">
+        <p class="eyebrow">KOREA WEATHER DESK</p>
+        <h1>오늘, 어디의<br /><em>하늘이 궁금한가요?</em></h1>
+        <p class="intro">지역을 선택하면 현재 날씨와 오늘의 시간대별 변화를 한눈에 보여드려요.</p>
+        <div class="location-controls">
+          <label class="select-wrap" for="citySelect">
+            <span class="pin">⌖</span>
+            <select id="citySelect" aria-label="날씨를 확인할 지역"></select>
+            <span class="chevron">⌄</span>
+          </label>
+          <button class="locate-button" id="locateButton" type="button">내 위치</button>
+        </div>
+      </section>
+
+      <section class="weather-card" aria-live="polite">
+        <div class="weather-visual">
+          <div class="sun-orb" id="weatherIcon">☀</div>
+          <p id="weatherPhrase">맑고 포근한 오후</p>
+        </div>
+        <div class="temperature-block">
+          <p class="card-label" id="locationName">서울특별시</p>
+          <div><strong id="temperature">--</strong><span>°</span></div>
+          <p class="feels-like">체감 <b id="feelsLike">--°</b></p>
+        </div>
+        <dl class="weather-facts">
+          <div><dt>습도</dt><dd id="humidity">--%</dd></div>
+          <div><dt>풍속</dt><dd id="windSpeed">-- km/h</dd></div>
+          <div><dt>강수 확률</dt><dd id="rainChance">--%</dd></div>
+        </dl>
+        <div class="update"><span id="updatedAt">불러오는 중</span><button id="refreshButton" type="button" aria-label="날씨 새로고침">↻</button></div>
+      </section>
+
+      <section class="forecast-section">
+        <div class="section-heading">
+          <div><p class="eyebrow">NEXT 12 HOURS</p><h2>현재부터 12시간 예보</h2></div>
+          <span id="todayDate"></span>
+        </div>
+        <div class="forecast-list" id="forecastList"></div>
+      </section>
+
+      <section class="notice">
+        <span>◎</span><p><b>외출 전 확인하세요.</b> 기상 상황은 빠르게 변할 수 있어요. 우산이 필요할 수 있는 시간대를 미리 확인해 보세요.</p>
+      </section>
+    </main>
+    <footer>WEATHER DATA · 행정안전부 재난안전데이터 · OPEN-METEO</footer>
+    <script src="app.js"></script>
+  </body>
+</html>
