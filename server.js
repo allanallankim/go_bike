@@ -25,6 +25,15 @@ async function weather(lat, lon) {
 }
 const server = http.createServer(async (req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+  // Lightweight endpoint for uptime checks; no files or upstream API calls.
+  if (requestUrl.pathname === '/healthz') {
+    res.writeHead(200, {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Content-Length': '2',
+      'Cache-Control': 'no-store'
+    });
+    return res.end(req.method === 'HEAD' ? undefined : 'OK');
+  }
   if (requestUrl.pathname === '/api/config') {
     return sendJson(res, 200, { kakaoJavaScriptKey });
   }
