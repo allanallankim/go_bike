@@ -60,6 +60,20 @@
       flex-direction: column;
     }
 
+    .site-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 20px;
+      padding: 14px 20px;
+      border-top: 1px solid var(--slate-200);
+      background: #ffffff;
+      color: var(--slate-600);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .site-footer a { color: var(--primary-hover); text-underline-offset: 3px; }
+
     /* 상단 네비게이션 헤더 */
     .navbar {
       background: #ffffff;
@@ -957,6 +971,11 @@
       </div>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <span>제작자: 알란</span>
+    <span>이메일: <a href="mailto:dkffks@gmail.com">dkffks@gmail.com</a></span>
+  </footer>
 
   <script>
   (() => {
