@@ -49,9 +49,11 @@ const server = http.createServer(async (req, res) => {
   const relative = requestUrl.pathname === '/' ? 'index_좌표선택_지명검색_개선본2.html' : decodeURIComponent(requestUrl.pathname).replace(/^[/\\]+/, '');
   const target = path.resolve(root, relative);
   const publicFiles = new Set(['index.html', 'index_좌표선택_지명검색_개선본2.html', 'app.js', 'style.css', 'favicon.ico']);
+  publicFiles.add('favicon.svg');
+  publicFiles.add('images/share.png');
   if (!publicFiles.has(relative)) { res.writeHead(404); return res.end('Not found'); }
   if (!target.startsWith(root + path.sep) || !fs.existsSync(target) || fs.statSync(target).isDirectory()) { res.writeHead(404); return res.end('Not found'); }
-  res.writeHead(200, { 'Content-Type': mimeTypes[path.extname(target)] || 'application/octet-stream' });
+  res.writeHead(200, { 'Content-Type': ({ '.svg': 'image/svg+xml', '.png': 'image/png' })[path.extname(target)] || mimeTypes[path.extname(target)] || 'application/octet-stream' });
   fs.createReadStream(target).pipe(res);
 });
 const port = Number(process.env.PORT) || 3000;

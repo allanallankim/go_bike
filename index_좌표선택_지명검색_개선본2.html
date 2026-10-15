@@ -2,9 +2,25 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="자전거 라이딩 Helper" />
+  <meta property="og:description" content="서비스 소개와 이용 방법을 확인하세요." />
+  <meta property="og:image" content="https://cycling-weather.onrender.com/images/share.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="초록색 배경 위 자전거 일러스트와 자전거 라이딩 Helper" />
+  <meta property="og:url" content="https://cycling-weather.onrender.com/" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="자전거 라이딩 Helper" />
+  <meta name="twitter:description" content="서비스 소개와 이용 방법을 확인하세요." />
+  <meta name="twitter:image" content="https://cycling-weather.onrender.com/images/share.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#0f172a" />
-  <title>카카오맵 자전거 길찾기 | Kakao Map Bicycle Route</title>
+  <title>자전거 라이딩 Helper | Kakao Map Bicycle Route</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
@@ -730,8 +746,8 @@
       <div class="brand-icon">🚲</div>
       <div>
         <div class="brand-title">
-          카카오맵 자전거 길찾기
-          <span class="kakao-badge">Kakao Route URL</span>
+          자전거 라이딩 Helper
+          <span class="kakao-badge">Cycling Route URL</span>
         </div>
         <div class="brand-subtitle">자전거 전용도로 우선 길찾기 & 실시간 라이딩 경로 분석</div>
       </div>
@@ -865,13 +881,13 @@
           </div>
           <div class="route-tip" id="routeTip">
             <span>💡</span>
-            <span id="tipText">출발지와 도착지를 지정하면 카카오맵 자전거 길찾기 URL이 생성됩니다.</span>
+            <span id="tipText">출발지와 도착지를 지정하면 자전거 길찾기 URL이 생성됩니다.</span>
           </div>
 
           <!-- 메인 카카오맵 길찾기 바로가기 버튼 -->
           <a id="btnOpenKakaoRoute" class="btn-main-route" href="#" target="_blank" rel="noopener">
             <span style="font-size:18px">🚲</span>
-            <span id="btnRouteText">카카오맵 자전거 길찾기 실행</span>
+            <span id="btnRouteText">자전거 라이딩 Helper 실행</span>
             <span>↗</span>
           </a>
 
@@ -1751,8 +1767,8 @@
         el.timeValue.textContent = '-';
         el.calValue.textContent = '-';
         el.btnOpenKakaoRoute.href = '#';
-        el.btnRouteText.textContent = '카카오맵 자전거 길찾기 실행';
-        el.tipText.textContent = '출발지와 도착지를 지정하면 카카오맵 자전거 길찾기 URL이 생성됩니다.';
+        el.btnRouteText.textContent = '자전거 라이딩 Helper 실행';
+        el.tipText.textContent = '출발지와 도착지를 지정하면 자전거 길찾기 URL이 생성됩니다.';
       }
     }
 
