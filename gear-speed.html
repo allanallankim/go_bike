@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>기어비와 속도계산 | 자전거 라이딩 Helper</title>
+  <meta name="description" content="시마노 11단·12단과 스램 12단의 체인링, 스프라켓, 케이던스로 기어비와 주행 속도를 비교하세요." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="/menu.css" />
+  <link rel="stylesheet" href="/gear-speed.css" />
+  <script src="/menu.js" defer></script>
+  <script src="/gear-speed.js" defer></script>
+</head>
+<body>
+  <header>🚲 자전거 라이딩 Helper</header>
+  <nav class="site-menu" aria-label="주 메뉴">
+    <details><summary>☰ 메뉴 · 기어비와 속도계산</summary><div class="menu-items">
+      <a href="/">자전거 라이딩 정보</a>
+      <a href="/tire-pressure.html">로드 자전거 타이어 공기압 계산</a>
+      <a href="/gear-speed.html" aria-current="page">기어비와 속도계산</a>
+    </div></details>
+  </nav>
+  <main>
+    <p class="eyebrow">GEAR RATIO & SPEED</p><h1>기어비와 속도계산</h1>
+    <p class="intro">내 구동계와 체인링을 선택하고, 케이던스에 따른 각 단의 속도를 비교하세요.</p>
+    <noscript><p>계산기를 이용하려면 브라우저에서 JavaScript를 활성화해 주세요.</p></noscript>
+    <form id="gear-form" class="card">
+      <div class="fields">
+        <label for="drivetrain">구동계<select id="drivetrain"><option value="shimano11">시마노 11단</option><option value="shimano12">시마노 12단</option><option value="sram12">스램 12단 (로드 AXS)</option></select></label>
+        <label for="cassette">스프라켓<select id="cassette"></select></label>
+        <label for="chainring-preset">체인링 구성<select id="chainring-preset"></select></label>
+        <label for="cadence">케이던스 (rpm)<input id="cadence" type="number" min="1" max="250" step="1" value="80" required /><small>1분 동안 페달을 돌리는 횟수</small></label>
+        <label for="small-ring">작은 체인링 (T)<input id="small-ring" type="number" min="20" max="70" step="1" value="34" required /></label>
+        <label for="large-ring">큰 체인링 (T)<input id="large-ring" type="number" min="20" max="70" step="1" value="50" required /></label>
+        <label for="circumference">바퀴 둘레 (mm)<input id="circumference" type="number" min="1000" max="3000" step="1" value="2171" required /><small>엑셀 기본값 2,171 mm · 실제 측정값 입력 가능</small></label>
+      </div>
+      <button type="submit">기어비와 속도 계산하기</button><p id="gear-error" class="error" role="alert" hidden></p>
+    </form>
+    <section class="card" id="gear-result" aria-labelledby="result-heading" hidden>
+      <h2 id="result-heading">단수별 기어비와 속도</h2><p id="gear-summary" role="status" aria-live="polite"></p>
+      <div class="highlights"><div>작은 체인링 속도 범위<strong id="small-range"></strong></div><div>큰 체인링 속도 범위<strong id="large-range"></strong></div></div>
+      <p class="table-hint">작은 화면에서는 표를 좌우로 밀어 확인하세요.</p>
+      <div class="table-scroll" tabindex="0" role="region" aria-label="단수별 속도표 (가로 스크롤 가능)"><table><caption id="table-caption">선택한 구동계의 기어비와 속도</caption><thead id="gear-head"></thead><tbody id="gear-rows"></tbody></table></div>
+    </section>
+    <section class="card notes"><h2>계산 방법</h2>
+      <p>기어비 = 체인링 톱니 수 ÷ 스프라켓 톱니 수<br />속도 (km/h) = 기어비 × 케이던스 (rpm) × 바퀴 둘레 (mm) × 60 ÷ 1,000,000</p>
+      <p>제공하신 엑셀의 계산식과 기본값(34/50T, 11–34T, 80rpm, 2,171mm)을 적용했습니다. 표는 작은 스프라켓부터 표시하며, 모든 기어 조합을 비교합니다.</p>
+      <p>계산값은 일정한 케이던스에서의 이론 속도입니다. 실제 속도는 타이어의 실제 둘레와 미끄러짐 등에 따라 달라집니다. 체인링 직접 입력은 속도 비교용이며, 부품 간 장착 호환성을 보장하지 않습니다.</p>
+      <p>스프라켓 구성 참고: <a href="https://productinfo.shimano.com/zh-CN/spec/road-cassette" target="_blank" rel="noopener noreferrer">시마노 사양</a> · <a href="https://www.sram.com/en/sram/models/cs-xg-1290-e1" target="_blank" rel="noopener noreferrer">스램 로드 12단 사양</a></p>
+    </section>
+  </main>
+  <footer><span>제작자: 알란</span><span>이메일: <a href="mailto:dkffks@gmail.com">dkffks@gmail.com</a></span></footer>
+</body>
+</html>

@@ -752,6 +752,7 @@
     .weather-message, .weather-source { font-size: 11px; color: var(--slate-500); line-height: 1.6; }
     .weather-refresh { float: right; }
   </style>
+  <script src="/menu.js" defer></script>
 </head>
 <body>
 
@@ -771,8 +772,14 @@
   </header>
 
   <nav class="site-menu" aria-label="주 메뉴">
-    <a href="/" aria-current="page">자전거 라이딩 정보</a>
-    <a href="/tire-pressure.html">로드 자전거 타이어 공기압 계산</a>
+    <details>
+      <summary>☰ 메뉴 · 자전거 라이딩 정보</summary>
+      <div class="menu-items">
+        <a href="/" aria-current="page">자전거 라이딩 정보</a>
+        <a href="/tire-pressure.html">로드 자전거 타이어 공기압 계산</a>
+        <a href="/gear-speed.html">기어비와 속도계산</a>
+      </div>
+    </details>
   </nav>
 
   <!-- 메인 레이아웃 -->

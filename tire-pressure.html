@@ -37,12 +37,19 @@
     @media(max-width:600px) { main { margin:24px auto; } .card { padding:20px; } .fields { grid-template-columns:1fr; } .results { gap:10px; } .wheel { padding:16px 8px; } .wheel strong { font-size:26px; } }
   </style>
   <script src="/tire-pressure.js" defer></script>
+  <script src="/menu.js" defer></script>
 </head>
 <body>
   <header>🚲 자전거 라이딩 Helper</header>
   <nav class="site-menu" aria-label="주 메뉴">
-    <a href="/">자전거 라이딩 정보</a>
-    <a href="/tire-pressure.html" aria-current="page">로드 자전거 타이어 공기압 계산</a>
+    <details>
+      <summary>☰ 메뉴 · 로드 자전거 타이어 공기압 계산</summary>
+      <div class="menu-items">
+        <a href="/">자전거 라이딩 정보</a>
+        <a href="/tire-pressure.html" aria-current="page">로드 자전거 타이어 공기압 계산</a>
+        <a href="/gear-speed.html">기어비와 속도계산</a>
+      </div>
+    </details>
   </nav>
   <main>
     <div class="eyebrow">ROAD TIRE PRESSURE</div>
