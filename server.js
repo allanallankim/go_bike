@@ -51,6 +51,7 @@ const server = http.createServer(async (req, res) => {
   const publicFiles = new Set(['index.html', 'index_좌표선택_지명검색_개선본2.html', 'app.js', 'style.css', 'favicon.ico']);
   publicFiles.add('favicon.svg');
   publicFiles.add('images/share.png');
+  for (const file of ['menu.css', 'tire-pressure.html', 'tire-pressure.js']) publicFiles.add(file);
   if (!publicFiles.has(relative)) { res.writeHead(404); return res.end('Not found'); }
   if (!target.startsWith(root + path.sep) || !fs.existsSync(target) || fs.statSync(target).isDirectory()) { res.writeHead(404); return res.end('Not found'); }
   res.writeHead(200, { 'Content-Type': ({ '.svg': 'image/svg+xml', '.png': 'image/png' })[path.extname(target)] || mimeTypes[path.extname(target)] || 'application/octet-stream' });

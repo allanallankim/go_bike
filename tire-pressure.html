@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로드 자전거 타이어 공기압 계산 | 자전거 라이딩 Helper</title>
+  <meta name="description" content="몸무게, 자전거 무게와 타이어 종류·폭으로 앞뒤 타이어의 참고 공기압을 계산하세요." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="/menu.css" />
+  <style>
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; display:flex; flex-direction:column; background:#f1f5f9; color:#0f172a; font:15px/1.7 system-ui,sans-serif; }
+    header { padding:16px 24px; background:white; font-size:20px; font-weight:800; }
+    main { width:min(100% - 32px,880px); margin:36px auto; flex:1; }
+    h1 { margin:8px 0; font-size:clamp(24px,5vw,34px); line-height:1.4; }
+    .eyebrow { color:#047857; font-weight:700; letter-spacing:2px; font-size:12px; }
+    .intro { color:#475569; margin-bottom:24px; }
+    .card { background:white; padding:28px; border:1px solid #e2e8f0; border-radius:18px; margin:20px 0; }
+    .fields,.results { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    label { display:block; font-weight:650; }
+    input,select { display:block; width:100%; padding:12px; margin-top:8px; border:1px solid #94a3b8; border-radius:9px; background:white; color:#0f172a; font:inherit; }
+    input:focus-visible,select:focus-visible,button:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
+    small { color:#64748b; font-size:12px; font-weight:400; }
+    button { background:#059669; color:white; border:0; border-radius:10px; padding:14px 24px; font:700 15px system-ui,sans-serif; cursor:pointer; margin-top:24px; width:100%; }
+    button:hover { background:#047857; }
+    h2 { font-size:20px; margin:0 0 16px; }
+    .wheel { padding:20px; border-radius:12px; background:#ecfdf5; text-align:center; }
+    .wheel strong { display:block; font-size:32px; color:#047857; }
+    .wheel span { display:block; color:#475569; }
+    .notes { color:#475569; font-size:14px; }
+    .notes p { margin:12px 0; }
+    a { color:#047857; text-underline-offset:3px; }
+    .error { color:#b91c1c; }
+    footer { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 20px; background:white; border-top:1px solid #e2e8f0; padding:14px 20px; color:#475569; font-size:13px; }
+    [hidden] { display:none !important; }
+    @media(max-width:600px) { main { margin:24px auto; } .card { padding:20px; } .fields { grid-template-columns:1fr; } .results { gap:10px; } .wheel { padding:16px 8px; } .wheel strong { font-size:26px; } }
+  </style>
+  <script src="/tire-pressure.js" defer></script>
+</head>
+<body>
+  <header>🚲 자전거 라이딩 Helper</header>
+  <nav class="site-menu" aria-label="주 메뉴">
+    <a href="/">자전거 라이딩 정보</a>
+    <a href="/tire-pressure.html" aria-current="page">로드 자전거 타이어 공기압 계산</a>
+  </nav>
+  <main>
+    <div class="eyebrow">ROAD TIRE PRESSURE</div>
+    <h1>내 자전거의 공기압 계산</h1>
+    <p class="intro">라이더와 자전거의 무게, 타이어 구성을 입력하고 앞뒤 공기압의 시작점을 확인하세요.</p>
+    <form id="pressure-form" class="card">
+      <div class="fields">
+        <label for="rider-weight">몸무게 (kg)
+          <input id="rider-weight" name="riderWeight" type="number" min="30" max="150" step="0.1" value="70" required />
+          <small>라이딩 의류를 포함한 무게 · 30~150 kg</small>
+        </label>
+        <label for="bike-weight">자전거 무게 (kg)
+          <input id="bike-weight" name="bikeWeight" type="number" min="4" max="30" step="0.1" value="8" required />
+          <small>물통·가방 등 장비를 포함한 무게 · 4~30 kg</small>
+        </label>
+        <label for="tire-type">타이어 종류
+          <select id="tire-type" name="tireType"><option value="tubeless">튜블리스</option><option value="clincher">클린처 (튜브 사용)</option></select>
+        </label>
+        <label for="tire-width">타이어 폭
+          <select id="tire-width" name="tireWidth"><option value="25">25c (25 mm)</option><option value="28" selected>28c (28 mm)</option><option value="30">30c (30 mm)</option></select>
+        </label>
+      </div>
+      <button type="submit">앞뒤 공기압 계산하기</button>
+      <p id="form-error" class="error" role="alert" hidden></p>
+    </form>
+    <section id="pressure-result" class="card" aria-live="polite" aria-atomic="true" hidden>
+      <h2>참고 공기압</h2>
+      <p id="pressure-summary"></p>
+      <div class="results">
+        <div class="wheel">앞 타이어<strong id="front-psi"></strong><span id="front-bar"></span></div>
+        <div class="wheel">뒤 타이어<strong id="rear-psi"></strong><span id="rear-bar"></span></div>
+      </div>
+      <p>타이어와 림의 허용 범위를 확인한 뒤 적용하세요. 이 값은 제품별 권장 압력을 대신하지 않습니다.</p>
+    </section>
+    <section class="card notes" aria-labelledby="calculation-notes">
+      <h2 id="calculation-notes">계산 기준과 사용 방법</h2>
+      <p>포장도로·700c 로드 자전거·앞뒤 동일한 타이어 폭을 가정한 간이 추정입니다. 총 무게의 앞 45% / 뒤 55% 하중 분배를 적용합니다.</p>
+      <p>이 서비스의 추정식은 클린처 기준 총 무게 80 kg, 28c에서 평균 75 PSI를 기준으로 무게에 비례하고 타이어 폭의 제곱에 반비례합니다. 튜블리스는 이 값의 90%로 계산합니다. 특정 제조사의 공식 계산식이 아닙니다.</p>
+      <p>실제 장착 폭, 림 폭, 노면과 자세에 따라 적절한 공기압이 달라집니다. 타이어·림 제조사가 지정한 최소·최대 압력 범위를 우선하고, 두 제품의 최대 압력 중 낮은 값을 넘기지 마세요. 훅리스 림은 제품별 호환성과 별도 압력 제한을 반드시 확인하세요.</p>
+      <p>참고: <a href="https://www.schwalbe.com/en/technology-faq/tire-pressure/" target="_blank" rel="noopener noreferrer">Schwalbe 공기압 안내</a> · <a href="https://www.schwalbe.com/en/technology-faq/hookless/" target="_blank" rel="noopener noreferrer">훅리스 림 안내</a></p>
+    </section>
+  </main>
+  <footer><span>제작자: 알란</span><span>이메일: <a href="mailto:dkffks@gmail.com">dkffks@gmail.com</a></span></footer>
+</body>
+</html>
