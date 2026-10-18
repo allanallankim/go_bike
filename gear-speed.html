@@ -33,7 +33,7 @@
         <label for="cadence">케이던스 (rpm)<input id="cadence" type="number" min="1" max="250" step="1" value="80" required /><small>1분 동안 페달을 돌리는 횟수</small></label>
         <label for="small-ring">작은 체인링 (T)<input id="small-ring" type="number" min="20" max="70" step="1" value="34" required /></label>
         <label for="large-ring">큰 체인링 (T)<input id="large-ring" type="number" min="20" max="70" step="1" value="50" required /></label>
-        <label for="circumference">바퀴 둘레 (mm)<input id="circumference" type="number" min="1000" max="3000" step="1" value="2171" required /><small>엑셀 기본값 2,171 mm · 실제 측정값 입력 가능</small></label>
+        <label for="circumference">바퀴 둘레 (mm)<input id="circumference" type="number" min="1000" max="3000" step="1" value="2171" required /><small>기본값 2,171 mm · 실제 측정값 입력 가능</small></label>
       </div>
       <button type="submit">기어비와 속도 계산하기</button><p id="gear-error" class="error" role="alert" hidden></p>
     </form>
@@ -45,7 +45,7 @@
     </section>
     <section class="card notes"><h2>계산 방법</h2>
       <p>기어비 = 체인링 톱니 수 ÷ 스프라켓 톱니 수<br />속도 (km/h) = 기어비 × 케이던스 (rpm) × 바퀴 둘레 (mm) × 60 ÷ 1,000,000</p>
-      <p>제공하신 엑셀의 계산식과 기본값(34/50T, 11–34T, 80rpm, 2,171mm)을 적용했습니다. 표는 작은 스프라켓부터 표시하며, 모든 기어 조합을 비교합니다.</p>
+      <p>기본 설정은 34/50T 체인링, 11–34T 스프라켓, 80rpm, 바퀴 둘레 2,171mm입니다. 표는 작은 스프라켓부터 표시하며, 모든 기어 조합을 비교합니다.</p>
       <p>계산값은 일정한 케이던스에서의 이론 속도입니다. 실제 속도는 타이어의 실제 둘레와 미끄러짐 등에 따라 달라집니다. 체인링 직접 입력은 속도 비교용이며, 부품 간 장착 호환성을 보장하지 않습니다.</p>
       <p>스프라켓 구성 참고: <a href="https://productinfo.shimano.com/zh-CN/spec/road-cassette" target="_blank" rel="noopener noreferrer">시마노 사양</a> · <a href="https://www.sram.com/en/sram/models/cs-xg-1290-e1" target="_blank" rel="noopener noreferrer">스램 로드 12단 사양</a></p>
     </section>
