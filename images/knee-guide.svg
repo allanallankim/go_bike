@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" role="img" aria-labelledby="title desc">
+  <title id="title">무릎 통증 위치를 기록하기 위한 개념도</title>
+  <desc id="desc">앞쪽, 안쪽, 바깥쪽, 뒤쪽 위치를 서로 다른 색의 원으로 표시한 단순한 다리 그림. 질환 진단을 위한 그림이 아닙니다.</desc>
+  <defs>
+    <g id="leg"><path d="M-40 0Q-51 57-36 112Q-26 141-32 165L-24 237Q-12 254 18 239L30 163Q23 139 35 109Q46 52 38 0" fill="#e2e8f0" stroke="#94a3b8" stroke-width="3"/><path d="M-26 129Q0 141 27 129" fill="none" stroke="#94a3b8" stroke-width="2"/></g>
+  </defs>
+  <rect width="1000" height="400" rx="20" fill="#f8fafc"/>
+  <g font-family="system-ui, sans-serif" text-anchor="middle" fill="#0f172a">
+    <g transform="translate(125 74)"><use href="#leg"/><ellipse cy="123" rx="22" ry="29" fill="#f43f5e" fill-opacity=".4" stroke="#be123c" stroke-width="3"/><text y="-37" font-size="21" font-weight="700">① 앞쪽</text><text y="282" font-size="16">무릎뼈 주변</text></g>
+    <g transform="translate(375 74)"><use href="#leg"/><ellipse cx="-27" cy="126" rx="15" ry="27" fill="#f59e0b" fill-opacity=".4" stroke="#b45309" stroke-width="3"/><text y="-37" font-size="21" font-weight="700">② 안쪽</text><text y="282" font-size="16">반대편 다리와 마주하는 면</text></g>
+    <g transform="translate(625 74)"><use href="#leg"/><ellipse cx="27" cy="126" rx="15" ry="27" fill="#8b5cf6" fill-opacity=".4" stroke="#6d28d9" stroke-width="3"/><text y="-37" font-size="21" font-weight="700">③ 바깥쪽</text><text y="282" font-size="16">다리의 바깥 면</text></g>
+    <g transform="translate(875 74)"><use href="#leg"/><path d="m-22 119 22 10 22-10" fill="none" stroke="#64748b" stroke-width="3"/><ellipse cy="126" rx="25" ry="24" fill="#0ea5e9" fill-opacity=".35" stroke="#0369a1" stroke-width="3"/><text y="-37" font-size="21" font-weight="700">④ 뒤쪽</text><text y="282" font-size="16">무릎이 접히는 곳</text></g>
+    <text x="500" y="386" font-size="13" fill="#64748b">①~③은 오른쪽 다리를 앞에서 본 개념도, ④는 뒤에서 본 개념도입니다.</text>
+  </g>
+</svg>

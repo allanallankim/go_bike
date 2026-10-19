@@ -28,9 +28,17 @@
     .record { border-top:1px solid #e2e8f0; padding:18px 0; }
     .record p { margin:6px 0; white-space:pre-wrap; overflow-wrap:anywhere; }
     .record button { width:auto; padding:8px 14px; margin-top:6px; }
+    .knee-figure { margin:20px 0; }
+    .knee-figure img { display:block; width:100%; height:auto; border-radius:12px; background:#f8fafc; }
+    .knee-figure figcaption { margin-top:8px; color:#64748b; font-size:12px; }
+    .knee-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0; }
+    .knee-grid article { padding:18px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; }
+    .knee-grid h3 { margin:0 0 8px; font-size:17px; }
+    .knee-grid p { margin:8px 0; }
+    .care-notice { padding:16px; border-left:4px solid #be123c; background:#fff1f2; }
     .notice { padding:16px; border-left:4px solid #059669; background:#ecfdf5; }
     #fit-advice { white-space:pre-line; }
-    @media(max-width:600px) { .measurements { grid-template-columns:1fr; } }
+    @media(max-width:600px) { .measurements,.knee-grid { grid-template-columns:1fr; } }
     @media print { header,.site-menu,button,.no-print { display:none !important; } body { background:#fff; } main { width:100%; margin:0; } .card { padding:14px; break-inside:avoid; } input,select,textarea { border:0; } }
   </style>
 </head>
@@ -96,7 +104,30 @@
         <li>통증이 없는 상태에서 한 번에 한 항목만 소폭 변경하고, 짧은 시승 후 느낌을 기록합니다. 시트포스트 최소 삽입선과 부품별 체결 토크를 지키세요.</li>
       </ol></details>
     </section>
-    <section class="card" aria-labelledby="journal-title"><h2 id="journal-title">4. 나의 세팅 기록</h2>
+    <section class="card" id="knee-guide" aria-labelledby="knee-title">
+      <h2 id="knee-title">4. 무릎이 불편할 때 확인할 것</h2>
+      <p>무릎 통증은 세팅뿐 아니라 주행량·강도, 페달링, 기존 부상 등 여러 요인이 겹쳐 생길 수 있습니다. 아래는 원인을 진단하는 표가 아니라, 전문가와 상담하기 전에 상황을 정리하는 점검 가이드입니다.</p>
+      <figure class="knee-figure">
+        <img src="/images/knee-guide.svg" width="1000" height="400" loading="lazy" alt="직접 제작한 무릎 위치 도식. 앞쪽은 무릎뼈 주변, 안쪽은 반대편 다리와 마주하는 쪽, 바깥쪽은 그 반대쪽, 뒤쪽은 무릎 접히는 곳을 표시합니다." />
+        <figcaption>위치 이해를 돕기 위해 직접 만든 개념도입니다. 해부학적 진단 그림이 아니며, 색칠한 위치만으로 질환을 판단할 수 없습니다.</figcaption>
+      </figure>
+      <div class="knee-grid">
+        <article><h3>① 앞쪽 · 무릎뼈 주변</h3><p>최근 무거운 기어로 힘을 주어 밟았는지, 긴 업힐이나 주행량이 늘었는지 돌아보세요. 안장이 지나치게 낮거나 앞으로 치우쳐 있지 않은지도 확인할 항목입니다.</p><p><strong>기록할 점:</strong> 오르막·출발·페달을 강하게 누를 때 중 언제 불편했는지 남겨보세요.</p></article>
+        <article><h3>② 안쪽 · 반대편 다리 쪽</h3><p>클릿이나 신발을 바꾼 뒤 시작됐는지, 발끝 방향이 억지로 고정되는 느낌이 있는지 확인하세요. 클릿을 뺄 때의 불편함도 함께 살펴봅니다.</p><p><strong>기록할 점:</strong> 좌우 차이와 신발·클릿 교체 시점을 남기세요. 발끝을 임의로 안쪽이나 바깥쪽으로 돌려 맞추지는 마세요.</p></article>
+        <article><h3>③ 바깥쪽 · 다리의 바깥 면</h3><p>최근 안장 높이·앞뒤 위치나 클릿을 바꿨는지, 장거리 주행을 갑자기 늘렸는지 확인하세요. 페달링 중 무릎이 움직이는 방향도 관찰할 항목입니다.</p><p><strong>기록할 점:</strong> 몇 분 또는 몇 km 이후 시작됐는지 남기세요. 페달 간격이나 스페이서는 전문가와 호환성을 확인한 뒤 조정하세요.</p></article>
+        <article><h3>④ 뒤쪽 · 무릎이 접히는 곳</h3><p>안장을 높이거나 뒤로 옮긴 뒤 다리가 과하게 뻗는 느낌이 있는지 살펴보세요. 뒤꿈치를 억지로 내리며 밟고 있지 않은지도 확인합니다.</p><p><strong>기록할 점:</strong> 최근 세팅 변경과 다리를 뻗을 때의 느낌을 남기세요. 통증 위치만 보고 안장을 바로 낮추지는 마세요.</p></article>
+      </div>
+      <details><summary>불편이 생겼을 때의 점검 순서</summary><ol>
+        <li>통증을 참고 주행하지 말고 멈춰 상태를 확인합니다. 주행할수록 악화된다면 그날 라이딩을 중단하세요.</li>
+        <li>최근 거리·업힐·강도 증가와 안장·신발·클릿 변경을 돌아봅니다. 쉬운 기어에서도 불편하면 계속 시험하지 마세요.</li>
+        <li>현재 세팅을 아래 기록에 남깁니다. 증상이 가라앉은 뒤 점검할 때도 한 번에 여러 항목을 바꾸지 않습니다.</li>
+        <li>통증이 반복되거나 지속되면 의료 전문가에게 상담하세요. 이후 필요에 따라 전문 피팅으로 자세와 장비를 함께 확인합니다.</li>
+      </ol></details>
+      <p class="care-notice"><strong>피팅보다 진료가 먼저인 경우</strong><br />체중을 싣거나 무릎을 움직이기 어렵거나, 심하게 붓거나 모양이 달라졌다면 신속히 진료받으세요. 무릎이 붉고 뜨거우면서 발열·오한이 동반되는 경우도 바로 의료기관에 상담하세요.</p>
+      <p class="notes">참고한 글: <a href="https://m.blog.naver.com/jsj82288/100139962146" target="_blank" rel="noopener noreferrer">네이버 블로그 「자전거와 통증에 대해서」</a>. 원문의 무릎 관련 내용을 간추리고, 일률적인 각도·회복 기간·교정 지시는 제외했습니다. 도식은 원문 이미지와 별도로 제작했습니다.</p>
+      <p class="notes">추가 참고: <a href="https://www.hss.edu/health-library/move-better/common-cycling-injuries" target="_blank" rel="noopener noreferrer">HSS 자전거 부상 안내</a> · <a href="https://www.nhs.uk/symptoms/knee-pain/" target="_blank" rel="noopener noreferrer">NHS 무릎 통증·진료 안내</a></p>
+    </section>
+    <section class="card" aria-labelledby="journal-title"><h2 id="journal-title">5. 나의 세팅 기록</h2>
       <p>현재 기기·브라우저에만 저장됩니다. 다른 기기와 동기화되지 않으며 브라우저 데이터 삭제 시 사라집니다. 내보내기로 백업하세요.</p>
       <form id="journal-form"><div class="fields">
         <label for="record-height">실제 안장 높이 (mm)<input id="record-height" type="number" min="400" max="1100" step="1" required /></label>

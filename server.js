@@ -51,6 +51,7 @@ const server = http.createServer(async (req, res) => {
   const publicFiles = new Set(['index.html', 'index_좌표선택_지명검색_개선본2.html', 'app.js', 'style.css', 'favicon.ico']);
   publicFiles.add('favicon.svg');
   publicFiles.add('images/share.png');
+  publicFiles.add('images/knee-guide.svg');
   for (const file of ['menu.css', 'tire-pressure.html', 'tire-pressure.js']) publicFiles.add(file);
   for (const file of ['menu.js', 'gear-speed.html', 'gear-speed.css', 'gear-speed.js']) publicFiles.add(file);
   for (const file of ['bike-fit.html', 'bike-fit.js']) publicFiles.add(file);
