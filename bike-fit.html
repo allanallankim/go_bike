@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>자가 피팅 가이드 | 자전거 라이딩 Helper</title>
+  <meta name="description" content="안장 높이 시작값 계산, 자세 점검과 세팅 기록으로 내 자전거의 편한 자세를 찾아보세요." />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" />
+  <link rel="stylesheet" href="/menu.css" />
+  <link rel="stylesheet" href="/gear-speed.css" />
+  <script src="/menu.js" defer></script>
+  <script src="/bike-fit.js" defer></script>
+  <style>
+    .measurements { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    .measurements svg { display:block; width:100%; height:240px; background:#f8fafc; border-radius:12px; }
+    .measurements h3 { font-size:17px; margin:12px 0 6px; }
+    .checks label { display:block; padding:12px 0; font-weight:400; }
+    .checks input { display:inline-block; width:auto; margin:0 10px 0 0; accent-color:#059669; }
+    .checks fieldset { border:0; padding:0; }
+    .checks legend { font-weight:700; }
+    textarea { width:100%; display:block; margin-top:8px; padding:12px; border:1px solid #94a3b8; border-radius:9px; font:inherit; resize:vertical; }
+    textarea:focus-visible { outline:3px solid #2563eb; outline-offset:3px; }
+    .actions { display:flex; flex-wrap:wrap; gap:10px; }
+    .actions button { width:auto; margin-top:8px; }
+    .secondary { background:#e2e8f0; color:#0f172a; }
+    .secondary:hover { background:#cbd5e1; }
+    .record { border-top:1px solid #e2e8f0; padding:18px 0; }
+    .record p { margin:6px 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .record button { width:auto; padding:8px 14px; margin-top:6px; }
+    .notice { padding:16px; border-left:4px solid #059669; background:#ecfdf5; }
+    #fit-advice { white-space:pre-line; }
+    @media(max-width:600px) { .measurements { grid-template-columns:1fr; } }
+    @media print { header,.site-menu,button,.no-print { display:none !important; } body { background:#fff; } main { width:100%; margin:0; } .card { padding:14px; break-inside:avoid; } input,select,textarea { border:0; } }
+  </style>
+</head>
+<body>
+  <header>🚲 자전거 라이딩 Helper</header>
+  <nav class="site-menu" aria-label="주 메뉴"><details><summary>☰ 메뉴 · 자가 피팅 가이드</summary><div class="menu-items">
+    <a href="/">자전거 라이딩 정보</a><a href="/tire-pressure.html">로드 자전거 타이어 공기압 계산</a><a href="/gear-speed.html">기어비와 속도계산</a><a href="/bike-fit.html" aria-current="page">자가 피팅 가이드</a>
+  </div></details></nav>
+  <main>
+    <p class="eyebrow">BIKE FIT JOURNAL</p><h1>자가 피팅 가이드</h1>
+    <p class="intro">시작값을 확인하고, 한 번에 한 항목씩 조정하며 나에게 편한 자세를 찾아보세요. 첫 버전은 로드 자전거 중심입니다.</p>
+    <p class="notice">계산값은 초기 참고값이며 정답이 아닙니다. 크랭크 길이·신발·페달·유연성에 따라 달라집니다. 통증이나 저림이 생기면 무리해서 타지 말고, 증상이 지속되거나 반복되면 의료 전문가에게 상담하세요.</p>
+    <noscript><p>계산과 기록 기능을 사용하려면 JavaScript를 활성화해 주세요.</p></noscript>
+    <section class="card" aria-labelledby="measure-title">
+      <h2 id="measure-title">1. 먼저, 같은 기준으로 측정하세요</h2>
+      <div class="measurements">
+        <div>
+          <svg viewBox="0 0 360 240" role="img" aria-labelledby="inseam-diagram-title"><title id="inseam-diagram-title">맨발로 서서 다리 사이에 수평으로 댄 책의 윗면에서 바닥까지 인심을 측정합니다.</title>
+            <g fill="none" stroke="#64748b" stroke-width="6" stroke-linecap="round"><circle cx="130" cy="36" r="18"/><path d="M130 56v65m-26-50h52m-26 50-22 88m22-88 22 88M65 215h230"/></g>
+            <path d="M102 120h58" stroke="#059669" stroke-width="9"/><path d="M225 122v90m-7-82 7-8 7 8m-14 74 7 8 7-8" fill="none" stroke="#059669" stroke-width="3"/>
+            <g fill="#047857" font-size="15" font-family="sans-serif"><text x="242" y="170">인심</text><text x="168" y="112">책 윗면</text><text x="265" y="233">바닥</text></g>
+          </svg>
+          <h3>인심 길이 (cm)</h3><p>맨발로 벽에 기대 서서 책을 다리 사이에 수평으로 댑니다. 책 윗면에서 바닥까지 수직 거리를 재세요. 바지의 인심 치수와 다릅니다. 두세 번 측정해 확인하세요.</p>
+        </div>
+        <div>
+          <svg viewBox="0 0 360 240" role="img" aria-labelledby="saddle-diagram-title"><title id="saddle-diagram-title">크랭크 회전축 중심인 BB에서 시트튜브 방향으로 안장 윗면의 기준점까지 측정합니다.</title>
+            <g fill="none" stroke="#94a3b8" stroke-width="5"><circle cx="76" cy="174" r="43"/><circle cx="285" cy="174" r="43"/><path d="m76 174 62-94 42 94H76l130-94 79 94m-105 0-58-126m84 32-8-40h30"/></g>
+            <path d="M95 48h56" stroke="#0f172a" stroke-width="9" stroke-linecap="round"/>
+            <path d="M180 174 122 48" stroke="#059669" stroke-width="3"/><circle cx="180" cy="174" r="6" fill="#059669"/><circle cx="122" cy="48" r="5" fill="#059669"/>
+            <g fill="#047857" font-size="14" font-family="sans-serif"><text x="14" y="104">안장 높이</text><text x="170" y="214">BB (회전축 중심)</text><text x="156" y="38">안장 윗면</text></g>
+          </svg>
+          <h3>현재 안장 높이 (mm)</h3><p>BB(크랭크 회전축) 중심에서 시트튜브 방향으로 안장 윗면까지 잽니다. 바닥이나 페달에서 재는 높이가 아닙니다. 안장의 측정 지점을 정하고 매번 같은 곳에서 재세요.</p>
+        </div>
+      </div>
+    </section>
+    <form id="fit-form" class="card">
+      <h2>2. 안장 높이 시작값 확인</h2>
+      <div class="fields">
+        <label for="fit-height">키 (cm, 선택)<input id="fit-height" type="number" min="130" max="220" step="0.1" /><small>기록용 정보이며 높이 계산에는 사용하지 않습니다.</small></label>
+        <label for="fit-inseam">인심 (cm)<input id="fit-inseam" type="number" min="55" max="110" step="0.1" required /></label>
+        <label for="fit-purpose">라이딩 목적<select id="fit-purpose"><option>편안한 장거리</option><option>일상 주행</option><option>스포츠 주행</option></select><small>점검 안내와 기록에 사용합니다.</small></label>
+        <label for="fit-current">현재 안장 높이 (mm, 선택)<input id="fit-current" type="number" min="400" max="1100" step="1" /></label>
+      </div><button type="submit">시작값 계산하기</button>
+      <p id="fit-error" class="error" role="alert" hidden></p>
+      <div id="fit-result" aria-live="polite" hidden><div class="highlights"><div>안장 높이 참고 시작값<strong id="fit-value"></strong></div><div>현재 높이와의 차이<strong id="fit-difference"></strong></div></div>
+        <p>인심(mm) × 0.883의 전통적인 간이 추정입니다. 이 수치로 한 번에 맞추지 말고 현재 세팅과 자세를 먼저 확인하세요. 목적별로 임의의 높이 보정은 적용하지 않습니다.</p>
+        <p id="purpose-advice"></p>
+      </div>
+    </form>
+    <section class="card checks" aria-labelledby="check-title">
+      <h2 id="check-title">3. 자세 체크리스트</h2><p>안전하게 고정한 실내 트레이너에서 확인하거나, 동행인의 도움을 받으세요. 주행 중 화면을 조작하지 마세요. 해당하는 항목을 선택하면 점검 순서를 안내합니다.</p>
+      <fieldset><legend>현재 자세에서 느끼는 점</legend>
+        <label><input type="checkbox" value="hips" />페달을 돌릴 때 골반이 좌우로 흔들려요</label>
+        <label><input type="checkbox" value="reach" />핸들이 멀게 느껴지고 어깨·팔에 힘이 들어가요</label>
+        <label><input type="checkbox" value="slide" />안장에서 자꾸 앞으로 미끄러져요</label>
+        <label><input type="checkbox" value="pain" />통증이나 저림이 있어요</label>
+      </fieldset><div id="fit-advice" class="notice" aria-live="polite">항목을 선택하면 점검할 내용을 보여드립니다.</div>
+      <details><summary>안장과 핸들 점검 순서 보기</summary><ol>
+        <li>현재 높이·기울기·앞뒤 위치를 기록하고 사진을 남깁니다.</li>
+        <li>안장 기울기는 제조사의 기준을 먼저 확인하고 수평을 출발점으로 점검합니다. 곡면 안장은 같은 기준면으로 측정하세요.</li>
+        <li>안장 앞뒤 위치는 편한 페달링과 균형을 보며 확인합니다. 핸들까지의 거리를 줄이기 위해 안장부터 무작정 앞으로 옮기지 마세요.</li>
+        <li>핸들을 잡았을 때 어깨에 과도한 힘이 들어가는지, 팔꿈치를 가볍게 굽힐 수 있는지, 손목이 꺾이는지 확인합니다. 스템·스페이서 조정은 정비 지식이 없다면 매장에 맡기세요.</li>
+        <li>통증이 없는 상태에서 한 번에 한 항목만 소폭 변경하고, 짧은 시승 후 느낌을 기록합니다. 시트포스트 최소 삽입선과 부품별 체결 토크를 지키세요.</li>
+      </ol></details>
+    </section>
+    <section class="card" aria-labelledby="journal-title"><h2 id="journal-title">4. 나의 세팅 기록</h2>
+      <p>현재 기기·브라우저에만 저장됩니다. 다른 기기와 동기화되지 않으며 브라우저 데이터 삭제 시 사라집니다. 내보내기로 백업하세요.</p>
+      <form id="journal-form"><div class="fields">
+        <label for="record-height">실제 안장 높이 (mm)<input id="record-height" type="number" min="400" max="1100" step="1" required /></label>
+        <label for="record-tilt">안장 기울기 (°, 선택)<input id="record-tilt" type="number" min="-20" max="20" step="0.1" /><small>앞코가 내려가면 음수, 올라가면 양수</small></label>
+        <label for="record-setback">안장 후퇴량 (mm, 선택)<input id="record-setback" type="number" min="-100" max="250" step="1" /><small>BB 수직선에서 안장 코까지 수평 거리 · 뒤쪽이 양수</small></label>
+        <label for="record-name">자전거 이름 (선택)<input id="record-name" type="text" maxlength="60" placeholder="예: 내 로드 자전거" /><small>같은 이름의 직전 기록과 비교합니다. 여러 대라면 서로 다른 이름을 쓰세요.</small></label>
+      </div><label for="record-notes">변경한 항목과 라이딩 후 느낌<textarea id="record-notes" rows="3" maxlength="1000" placeholder="예: 높이만 소폭 조정. 짧게 시승 후 골반 움직임 확인."></textarea></label>
+      <button type="submit">현재 세팅 기록하기</button></form>
+      <p id="storage-status" role="status" aria-live="polite"></p><div class="actions no-print"><button id="export-records" type="button" class="secondary">기록 내보내기 (JSON)</button><button id="print-fit" type="button" class="secondary">인쇄 / PDF 저장</button></div>
+      <div id="fit-records"></div>
+    </section>
+    <section class="card notes"><h2>참고 안내</h2><p>신체 치수만으로 안장 앞뒤 위치·핸들 높이·클릿 위치를 정확히 결정할 수는 없습니다. 불편이 반복되거나 조정이 어렵다면 전문 피팅을 이용하세요.</p>
+      <p>참고: <a href="https://www.roadbikerider.com/wp-content/uploads/2018/04/1BikeFitEbookENHANCED.pdf" target="_blank" rel="noopener noreferrer">RoadBikeRider 피팅 안내 (PDF)</a> · <a href="https://www.hss.edu/health-library/move-better/common-cycling-injuries" target="_blank" rel="noopener noreferrer">HSS 자전거 부상 안내</a></p>
+    </section>
+  </main><footer><span>제작자: 알란</span><span>이메일: <a href="mailto:dkffks@gmail.com">dkffks@gmail.com</a></span></footer>
+</body></html>
