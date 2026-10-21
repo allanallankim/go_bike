@@ -19,6 +19,7 @@
   <meta name="twitter:description" content="서비스 소개와 이용 방법을 확인하세요." />
   <meta name="twitter:image" content="https://cycling-weather.onrender.com/images/share.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="출발지와 도착지를 지도에서 선택하고 8시간 날씨, 강수확률, 바람을 확인해 자전거 라이딩을 계획하세요." />
   <meta name="theme-color" content="#0f172a" />
   <title>자전거 라이딩 Helper | Kakao Map Bicycle Route</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1330,7 +1331,7 @@
           border: 1px solid #e2e8f0; font-family: Pretendard, sans-serif; font-size: 13px; min-width: 200px;
         `;
         wrap.innerHTML = `
-          <div style="font-weight:700; color:#0f172a; margin-bottom:4px; max-width:210px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${addr}</div>
+          <div style="font-weight:700; color:#0f172a; margin-bottom:4px; max-width:210px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" class="pop-addr"></div>
           <div style="font-size:11px; color:#64748b; margin-bottom:10px;">${lat.toFixed(5)}, ${lng.toFixed(5)}</div>
           <div style="display:flex; gap:6px;">
             <button id="popBtnStart" style="flex:1; background:#2563eb; color:#fff; border:none; padding:6px 0; border-radius:6px; font-weight:700; font-size:11px; cursor:pointer;">🚩 출발지로</button>
@@ -1338,6 +1339,7 @@
             <button id="popBtnClose" style="background:#f1f5f9; color:#475467; border:none; padding:6px 8px; border-radius:6px; font-size:11px; cursor:pointer;">✕</button>
           </div>
         `;
+        wrap.querySelector('.pop-addr').textContent = addr;
 
         wrap.querySelector('#popBtnStart').onclick = () => {
           setStartPoint(addr, lat, lng);
@@ -1429,10 +1431,13 @@
           data.slice(0, 5).forEach((item) => {
             const row = document.createElement('div');
             row.className = 'autocomplete-item';
-            row.innerHTML = `
-              <div class="item-name">${item.place_name}</div>
-              <div class="item-addr">${item.road_address_name || item.address_name}</div>
-            `;
+            const name = document.createElement('div');
+            name.className = 'item-name';
+            name.textContent = item.place_name;
+            const addr = document.createElement('div');
+            addr.className = 'item-addr';
+            addr.textContent = item.road_address_name || item.address_name;
+            row.append(name, addr);
             row.onclick = () => {
               const lat = parseFloat(item.y);
               const lng = parseFloat(item.x);

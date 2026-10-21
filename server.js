@@ -7,7 +7,15 @@ const root = __dirname;
 loadEnv(path.join(root, '.env'));
 // Public browser SDK key; deployments may override it with an environment variable.
 const kakaoJavaScriptKey = process.env.KAKAO_JAVASCRIPT_KEY || 'ec488d4f5312fe9e2f5d9815029c9ef3';
-const mimeTypes = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json; charset=utf-8', '.gpx':'application/gpx+xml; charset=utf-8', '.ico':'image/x-icon' };
+const mimeTypes = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json; charset=utf-8', '.gpx':'application/gpx+xml; charset=utf-8', '.ico':'image/x-icon', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg' };
+const publicFiles = new Set([
+  'index.html', 'index_좌표선택_지명검색_개선본2.html', 'app.js', 'style.css', 'favicon.ico', 'favicon.svg',
+  'menu.css', 'menu.js', 'tire-pressure.html', 'tire-pressure.js', 'gear-speed.html', 'gear-speed.css', 'gear-speed.js',
+  'bike-fit.html', 'bike-fit.js', 'bike-parts.html',
+  'images/share.png', 'images/knee-guide.svg', 'images/bike-parts-road.jpg', 'images/bike-parts-mountain.jpg', 'images/bike-parts-road-detail.jpg'
+]);
+// File names are not versioned, so HTML always revalidates and CSS/JS stay short-lived.
+const cacheControl = { '.html':'no-cache', '.css':'public, max-age=3600', '.js':'public, max-age=3600', '.ico':'public, max-age=604800', '.svg':'public, max-age=604800', '.png':'public, max-age=604800', '.jpg':'public, max-age=604800' };
 
 function loadEnv(file) {
   if (!fs.existsSync(file)) return;
@@ -46,19 +54,14 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 502, { error:'날씨 정보를 가져오지 못했습니다. 잠시 후 다시 시도해 주세요.' });
     }
   }
-  const relative = requestUrl.pathname === '/' ? 'index_좌표선택_지명검색_개선본2.html' : decodeURIComponent(requestUrl.pathname).replace(/^[/\\]+/, '');
+  let relative;
+  try { relative = requestUrl.pathname === '/' ? 'index_좌표선택_지명검색_개선본2.html' : decodeURIComponent(requestUrl.pathname).replace(/^[/\\]+/, ''); }
+  catch { res.writeHead(400); return res.end('Bad request'); }
   const target = path.resolve(root, relative);
-  const publicFiles = new Set(['index.html', 'index_좌표선택_지명검색_개선본2.html', 'app.js', 'style.css', 'favicon.ico']);
-  publicFiles.add('favicon.svg');
-  publicFiles.add('images/share.png');
-  publicFiles.add('images/knee-guide.svg');
-  for (const file of ['menu.css', 'tire-pressure.html', 'tire-pressure.js']) publicFiles.add(file);
-  for (const file of ['menu.js', 'gear-speed.html', 'gear-speed.css', 'gear-speed.js']) publicFiles.add(file);
-  for (const file of ['bike-fit.html', 'bike-fit.js']) publicFiles.add(file);
-  for (const file of ['bike-parts.html', 'images/bike-parts-road.jpg', 'images/bike-parts-mountain.jpg', 'images/bike-parts-road-detail.jpg']) publicFiles.add(file);
   if (!publicFiles.has(relative)) { res.writeHead(404); return res.end('Not found'); }
   if (!target.startsWith(root + path.sep) || !fs.existsSync(target) || fs.statSync(target).isDirectory()) { res.writeHead(404); return res.end('Not found'); }
-  res.writeHead(200, { 'Content-Type': ({ '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg' })[path.extname(target)] || mimeTypes[path.extname(target)] || 'application/octet-stream' });
+  const ext = path.extname(target);
+  res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream', 'Cache-Control': cacheControl[ext] || 'no-cache' });
   fs.createReadStream(target).pipe(res);
 });
 const port = Number(process.env.PORT) || 3000;
