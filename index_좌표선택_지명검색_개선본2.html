@@ -976,14 +976,12 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 3px 8px;
+      padding: 4px 8px;
       border-radius: 999px;
       font-size: 11px;
       font-weight: 800;
       color: #ffffff;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-      transform: translate(-50%, -100%);
-      margin-top: -6px;
       white-space: nowrap;
       user-select: none;
       pointer-events: none;
@@ -1005,9 +1003,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transform: translate(-50%, -50%);
       pointer-events: none;
       user-select: none;
+      margin-bottom: -7px;
     }
     .gpx-map-hover-bubble {
       background: #0f172a;
@@ -1030,6 +1028,7 @@
       border: 3px solid #ffffff;
       border-radius: 50%;
       box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.45);
+      flex-shrink: 0;
     }
   </style>
   <script src="/menu.js" defer></script>
@@ -1919,13 +1918,15 @@
       const overlay = new kakao.maps.CustomOverlay({
         position: position,
         content: div,
+        xAnchor: 0.5,
+        yAnchor: 1.2,
         zIndex: type === 'peak' ? 11 : 12
       });
       overlay.setMap(map);
       return overlay;
     }
 
-    // 지도 위 호버 동기화 마커 표시/갱신
+    // 지도 위 호버 동기화 마커 표시/갱신 (녹색 경로선 정중앙에 정확히 일치)
     function updateGpxHoverMarker(pt, distText, eleText, slopeText) {
       if (!map) return;
       const position = pt.latLng;
@@ -1942,6 +1943,8 @@
         gpxHoverMarker = new kakao.maps.CustomOverlay({
           position: position,
           content: content,
+          xAnchor: 0.5,
+          yAnchor: 1.0,
           zIndex: 30
         });
         gpxHoverMarker.setMap(map);
