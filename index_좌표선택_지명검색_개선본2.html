@@ -807,6 +807,230 @@
     .weather-wind { color: var(--primary-hover); }
     .weather-message, .weather-source { font-size: 11px; color: var(--slate-500); line-height: 1.6; }
     .weather-refresh { float: right; }
+    /* GPX 코스 & 고도 프로필 스타일 */
+    .gpx-card {
+      transition: all 0.2s ease;
+    }
+    .gpx-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .gpx-stat-item {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .gpx-stat-item.full-width {
+      grid-column: span 2;
+    }
+    .gpx-stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--slate-500);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gpx-stat-val {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--slate-900);
+      font-family: 'Plus Jakarta Sans', 'Pretendard', sans-serif;
+      letter-spacing: -0.01em;
+    }
+    .gpx-elevation-box {
+      margin-top: 10px;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      padding: 10px;
+      position: relative;
+    }
+    .gpx-elevation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 6px;
+    }
+    .gpx-elevation-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--slate-800);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .gpx-elevation-hover-tip {
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: right;
+    }
+    .gpx-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 125px;
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 6px;
+      overflow: hidden;
+      touch-action: none;
+    }
+    .gpx-canvas-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+    .btn-mini-tool {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      color: var(--slate-700);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .btn-mini-tool:hover {
+      background: var(--slate-100);
+      border-color: var(--slate-300);
+    }
+
+    /* 지도 하단 플로팅 와이드 고도 패널 */
+    .map-wide-elevation-panel {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 12px 14px 10px;
+      z-index: 25;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      animation: slideUpElevation 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUpElevation {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .wide-elevation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-close-wide {
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      color: var(--slate-500);
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .btn-close-wide:hover {
+      background: var(--slate-100);
+      color: var(--slate-800);
+    }
+    .wide-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 105px;
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 6px;
+      overflow: hidden;
+      touch-action: none;
+    }
+    .wide-canvas-wrap canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    /* 지도 위 커스텀 오버레이 핀 */
+    .gpx-map-pin {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      transform: translate(-50%, -100%);
+      margin-top: -6px;
+      white-space: nowrap;
+      user-select: none;
+      pointer-events: none;
+    }
+    .gpx-map-pin.start {
+      background: #059669;
+      border: 2px solid #ffffff;
+    }
+    .gpx-map-pin.end {
+      background: #e11d48;
+      border: 2px solid #ffffff;
+    }
+    .gpx-map-pin.peak {
+      background: #d97706;
+      border: 2px solid #ffffff;
+    }
+    .gpx-map-hover-pin {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      user-select: none;
+    }
+    .gpx-map-hover-bubble {
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      white-space: nowrap;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .gpx-map-hover-dot {
+      width: 14px;
+      height: 14px;
+      background: #10b981;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.45);
+    }
   </style>
   <script src="/menu.js" defer></script>
 </head>
@@ -929,18 +1153,71 @@
         </div>
 
         <!-- 경로 분석 & 통계 카드 -->
-        <section class="card" aria-label="GPX 코스 불러오기">
-          <h2 style="font-size:14px; margin-bottom:10px;">GPX 코스</h2>
-          <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-            <input id="gpxFileInput" type="file" accept=".gpx,application/gpx+xml" style="display:none;" />
-            <button id="btnOpenGpx" type="button" class="btn-quick" style="display:inline-flex; align-items:center; gap:5px; padding:6px 12px; font-size:12px;">
-              📁 <span>파일 열기</span>
-            </button>
-            <button id="btnClearGpx" type="button" class="btn-quick" style="display:inline-flex; align-items:center; gap:5px; padding:6px 12px; font-size:12px;" disabled>
-              🗑️ <span>코스 지우기</span>
-            </button>
+        <!-- GPX 코스 & 고도 분석 카드 -->
+        <section class="card gpx-card" aria-label="GPX 코스 불러오기">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h2 style="font-size:14px; margin:0;">GPX 코스 & 고도 분석</h2>
+            <div style="display:flex; gap:6px;">
+              <input id="gpxFileInput" type="file" accept=".gpx,application/gpx+xml" style="display:none;" />
+              <button id="btnOpenGpx" type="button" class="btn-quick" style="display:inline-flex; align-items:center; gap:4px; padding:5px 10px; font-size:12px;">
+                📁 <span>파일 열기</span>
+              </button>
+              <button id="btnClearGpx" type="button" class="btn-quick" style="display:inline-flex; align-items:center; gap:4px; padding:5px 10px; font-size:12px;" disabled>
+                🗑️ <span>지우기</span>
+              </button>
+            </div>
           </div>
-          <p id="gpxCourseInfo" class="weather-message" aria-live="polite">GPX 파일을 열면 지도에 초록색 경로로 표시됩니다.</p>
+          <p id="gpxCourseInfo" class="weather-message" aria-live="polite">GPX 파일을 열면 지도 경로와 획득고도, 고도 프로필이 표시됩니다.</p>
+
+          <!-- GPX 통계 및 고도 차트 영역 (파일 로드 시 표시) -->
+          <div id="gpxStatsContainer" style="display:none; margin-top:12px;">
+            <div class="gpx-stat-grid">
+              <div class="gpx-stat-item">
+                <span class="gpx-stat-label">📏 총 거리</span>
+                <span class="gpx-stat-val" id="gpxDistance">-</span>
+              </div>
+              <div class="gpx-stat-item">
+                <span class="gpx-stat-label">⛰️ 획득고도 (상승)</span>
+                <span class="gpx-stat-val" id="gpxAscent" style="color:var(--primary);">-</span>
+              </div>
+              <div class="gpx-stat-item">
+                <span class="gpx-stat-label">📉 누적 하강</span>
+                <span class="gpx-stat-val" id="gpxDescent" style="color:#2563eb;">-</span>
+              </div>
+              <div class="gpx-stat-item">
+                <span class="gpx-stat-label">🏔️ 최고 / 최저 고도</span>
+                <span class="gpx-stat-val" id="gpxElevationMinMax" style="font-size:13px;">-</span>
+              </div>
+              <div class="gpx-stat-item full-width">
+                <span class="gpx-stat-label">⏱️ 예상 소요 시간 (평속 20km/h + 고도 반영)</span>
+                <span class="gpx-stat-val" id="gpxEstimatedTime" style="font-size:13px;">-</span>
+              </div>
+            </div>
+
+            <!-- 사이드바 고도 프로필 차트 박스 -->
+            <div id="gpxElevationBox" class="gpx-elevation-box">
+              <div class="gpx-elevation-header">
+                <span class="gpx-elevation-title">📈 코스 고도 프로필</span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <button id="btnToggleWideElevation" type="button" class="btn-mini-tool" title="지도 하단에서 넓게 보기">
+                    ⛶ 넓게보기
+                  </button>
+                </div>
+              </div>
+              <div class="gpx-canvas-wrap">
+                <canvas id="gpxElevationCanvas"></canvas>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:11px;">
+                <span style="color:var(--slate-400); font-size:10px;">0 km</span>
+                <span id="gpxChartHoverTip" class="gpx-elevation-hover-tip">그래프를 터치하거나 마우스를 올려보세요</span>
+                <span id="gpxChartMaxDistLabel" style="color:var(--slate-400); font-size:10px;">- km</span>
+              </div>
+            </div>
+
+            <div id="gpxNoElevationAlert" style="display:none; margin-top:8px; padding:8px 10px; background:#fffbeb; border:1px solid #fef3c7; border-radius:8px; font-size:11px; color:#b45309;">
+              ℹ️ 이 GPX 파일에는 고도(ele) 태그가 포함되어 있지 않아 거리 정보만 표시됩니다.
+            </div>
+          </div>
         </section>
 
         <section class="card route-weather" aria-label="출발지와 도착지 8시간 날씨">
@@ -1383,6 +1660,19 @@
         <span id="pickBannerText">지도에서 원하는 지점을 클릭하세요.</span>
         <button id="btnCancelPick" class="btn-cancel-pick">취소</button>
       </div>
+      <!-- 지도 하단 와이드 고도 프로필 패널 -->
+      <div id="mapWideElevationPanel" class="map-wide-elevation-panel">
+        <div class="wide-elevation-header">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:12px; font-weight:800; color:var(--slate-800);">📈 GPX 코스 전체 고도 프로필</span>
+            <span id="wideChartHoverTip" style="font-size:11px; color:var(--primary); font-weight:600;">마우스나 터치로 지점을 탐색하세요</span>
+          </div>
+          <button id="btnCloseWideElevation" class="btn-close-wide" type="button" title="닫기">✕</button>
+        </div>
+        <div class="wide-canvas-wrap">
+          <canvas id="gpxWideElevationCanvas"></canvas>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -1419,6 +1709,12 @@
     let courseBounds = null;
     let courseLoadVersion = 0;
     let clickOverlay = null;
+    let gpxCourseData = null;
+    let gpxStartMarker = null;
+    let gpxEndMarker = null;
+    let gpxPeakMarker = null;
+    let gpxHoverMarker = null;
+    let isWideElevationOpen = false;
 
     // DOM 엘리먼트 캐싱
     const $ = (id) => document.getElementById(id);
@@ -1540,6 +1836,400 @@
       requestInitialGps();
     }
 
+    // 두 지점 사이의 구면 거리 계산 (Haversine 공식, 미터 단위)
+    function calcHaversineDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371000;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    // 고도 데이터 거리 기반 가중 이동 평균 스무딩 (노이즈 지터 제거)
+    function smoothElevationArray(points) {
+      const n = points.length;
+      if (n < 3) return points.map(p => p.ele);
+      const smoothed = new Array(n);
+      const radiusMeters = 35; // 35m 윈도우
+
+      for (let i = 0; i < n; i++) {
+        if (points[i].ele === null) {
+          smoothed[i] = null;
+          continue;
+        }
+        let eleWeightSum = 0;
+        let weightSum = 0;
+        // 인접 15개 범위 탐색
+        const minJ = Math.max(0, i - 15);
+        const maxJ = Math.min(n - 1, i + 15);
+        for (let j = minJ; j <= maxJ; j++) {
+          if (points[j].ele === null) continue;
+          const dist = Math.abs(points[i].distCum - points[j].distCum);
+          if (dist <= radiusMeters) {
+            const weight = 1 - (dist / radiusMeters);
+            eleWeightSum += points[j].ele * weight;
+            weightSum += weight;
+          }
+        }
+        smoothed[i] = weightSum > 0 ? (eleWeightSum / weightSum) : points[i].ele;
+      }
+      return smoothed;
+    }
+
+    // 각 포인트의 경사도(%) 계산 (앞뒤 약 25~35m 구간 기준)
+    function computePointSlopes(points) {
+      const n = points.length;
+      const slopes = new Array(n).fill(0);
+      for (let i = 0; i < n; i++) {
+        let prev = i, next = i;
+        while (prev > 0 && (points[i].distCum - points[prev].distCum) < 25) prev--;
+        while (next < n - 1 && (points[next].distCum - points[i].distCum) < 25) next++;
+        const dDist = points[next].distCum - points[prev].distCum;
+        const dEle = points[next].smoothEle - points[prev].smoothEle;
+        if (dDist > 5 && Number.isFinite(dEle)) {
+          slopes[i] = Math.max(-30, Math.min(30, (dEle / dDist) * 100));
+        } else {
+          slopes[i] = 0;
+        }
+      }
+      return slopes;
+    }
+
+    // 라이딩 소요 시간 예측 (평지 20km/h + 획득고도 100m당 6분)
+    function estimateRideTime(distanceMeters, elevationGainMeters) {
+      const distKm = distanceMeters / 1000;
+      const gain100m = (elevationGainMeters || 0) / 100;
+      const totalMinutes = Math.round((distKm / 20) * 60 + (gain100m * 6));
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      if (hours > 0) {
+        return `약 ${hours}시간 ${minutes > 0 ? minutes + '분' : ''}`;
+      }
+      return `약 ${Math.max(1, minutes)}분`;
+    }
+
+    // 지도 위 커스텀 오버레이 핀 생성 헬퍼
+    function createGpxPinOverlay(position, label, type) {
+      if (!map) return null;
+      const div = document.createElement('div');
+      div.className = `gpx-map-pin ${type}`;
+      div.textContent = label;
+      const overlay = new kakao.maps.CustomOverlay({
+        position: position,
+        content: div,
+        zIndex: type === 'peak' ? 11 : 12
+      });
+      overlay.setMap(map);
+      return overlay;
+    }
+
+    // 지도 위 호버 동기화 마커 표시/갱신
+    function updateGpxHoverMarker(pt, distText, eleText, slopeText) {
+      if (!map) return;
+      const position = pt.latLng;
+      const content = document.createElement('div');
+      content.className = 'gpx-map-hover-pin';
+      content.innerHTML = `
+        <div class="gpx-map-hover-bubble">
+          <span>${distText}</span> · <span>${eleText}</span> <span>(${slopeText})</span>
+        </div>
+        <div class="gpx-map-hover-dot"></div>
+      `;
+
+      if (!gpxHoverMarker) {
+        gpxHoverMarker = new kakao.maps.CustomOverlay({
+          position: position,
+          content: content,
+          zIndex: 30
+        });
+        gpxHoverMarker.setMap(map);
+      } else {
+        gpxHoverMarker.setPosition(position);
+        gpxHoverMarker.setContent(content);
+        if (!gpxHoverMarker.getMap()) gpxHoverMarker.setMap(map);
+      }
+    }
+
+    function hideGpxHoverMarker() {
+      if (gpxHoverMarker) {
+        gpxHoverMarker.setMap(null);
+      }
+    }
+
+    // Canvas 고도 프로필 차트 렌더러
+    function renderElevationChart(canvas, courseData, hoverIndex = null) {
+      if (!canvas || !courseData || !courseData.points || !courseData.points.length) return;
+      const rect = canvas.getBoundingClientRect();
+      const cssW = rect.width || canvas.clientWidth || 300;
+      const cssH = rect.height || canvas.clientHeight || 120;
+      const dpr = window.devicePixelRatio || 1;
+
+      if (canvas.width !== Math.round(cssW * dpr) || canvas.height !== Math.round(cssH * dpr)) {
+        canvas.width = Math.round(cssW * dpr);
+        canvas.height = Math.round(cssH * dpr);
+      }
+
+      const ctx = canvas.getContext('2d');
+      ctx.save();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.scale(dpr, dpr);
+
+      const pad = { top: 16, right: 14, bottom: 22, left: 38 };
+      const chartW = Math.max(10, cssW - pad.left - pad.right);
+      const chartH = Math.max(10, cssH - pad.top - pad.bottom);
+
+      const totalDist = courseData.totalDist || 1;
+      let minY = courseData.minEle;
+      let maxY = courseData.maxEle;
+      if (maxY - minY < 20) {
+        maxY = minY + 25;
+      }
+      const padY = (maxY - minY) * 0.1;
+      const rangeMin = minY - padY;
+      const rangeMax = maxY + padY;
+      const rangeDiff = rangeMax - rangeMin || 1;
+
+      const getX = (dist) => pad.left + (dist / totalDist) * chartW;
+      const getY = (ele) => pad.top + (1 - (ele - rangeMin) / rangeDiff) * chartH;
+
+      // 1. 그리드 라인 & Y축 눈금 (3선)
+      ctx.font = '10px "Plus Jakarta Sans", Pretendard, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      const gridSteps = 3;
+      for (let s = 0; s <= gridSteps; s++) {
+        const val = rangeMin + (rangeDiff / gridSteps) * s;
+        const y = getY(val);
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(pad.left + chartW, y);
+        ctx.stroke();
+
+        ctx.fillStyle = '#94a3b8';
+        ctx.fillText(`${Math.round(val)}m`, pad.left - 5, y);
+      }
+      ctx.setLineDash([]);
+
+      const pts = courseData.points;
+      if (!pts.length) {
+        ctx.restore();
+        return;
+      }
+
+      // 2. 그라데이션 영역 채움
+      const gradient = ctx.createLinearGradient(0, pad.top, 0, pad.top + chartH);
+      gradient.addColorStop(0, 'rgba(5, 150, 105, 0.4)');
+      gradient.addColorStop(0.85, 'rgba(5, 150, 105, 0.08)');
+      gradient.addColorStop(1, 'rgba(5, 150, 105, 0.01)');
+
+      ctx.beginPath();
+      ctx.moveTo(getX(pts[0].distCum), pad.top + chartH);
+      for (let i = 0; i < pts.length; i++) {
+        ctx.lineTo(getX(pts[i].distCum), getY(pts[i].smoothEle));
+      }
+      ctx.lineTo(getX(pts[pts.length - 1].distCum), pad.top + chartH);
+      ctx.closePath();
+      ctx.fillStyle = gradient;
+      ctx.fill();
+
+      // 3. 고도 라인
+      ctx.beginPath();
+      for (let i = 0; i < pts.length; i++) {
+        const x = getX(pts[i].distCum);
+        const y = getY(pts[i].smoothEle);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      // 4. 최고 고도 지점(Peak) 마커 표시
+      if (courseData.peakIdx >= 0 && courseData.peakIdx < pts.length) {
+        const peakPt = pts[courseData.peakIdx];
+        const px = getX(peakPt.distCum);
+        const py = getY(peakPt.smoothEle);
+
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.font = 'bold 9px "Plus Jakarta Sans", Pretendard, sans-serif';
+        ctx.textAlign = px > cssW - 50 ? 'right' : (px < 50 ? 'left' : 'center');
+        ctx.fillStyle = '#b45309';
+        ctx.fillText(`▲${Math.round(courseData.maxEle)}m`, px, Math.max(10, py - 7));
+      }
+
+      // 5. 호버 상태 인터랙션
+      if (hoverIndex !== null && hoverIndex >= 0 && hoverIndex < pts.length) {
+        const hp = pts[hoverIndex];
+        const hx = getX(hp.distCum);
+        const hy = getY(hp.smoothEle);
+
+        // 수직 헤어라인
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 2]);
+        ctx.beginPath();
+        ctx.moveTo(hx, pad.top);
+        ctx.lineTo(hx, pad.top + chartH);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 현재 포인트 원
+        ctx.fillStyle = '#059669';
+        ctx.beginPath();
+        ctx.arc(hx, hy, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 툴팁 박스
+        const distKmText = (hp.distCum / 1000).toFixed(1) + 'km';
+        const eleText = Math.round(hp.smoothEle) + 'm';
+        const slopeText = (hp.slope >= 0 ? '+' : '') + hp.slope.toFixed(1) + '%';
+        const tooltipText = `${distKmText} · ${eleText} (${slopeText})`;
+
+        ctx.font = 'bold 10px "Plus Jakarta Sans", Pretendard, sans-serif';
+        const tw = ctx.measureText(tooltipText).width;
+        let bx = hx - tw / 2 - 6;
+        if (bx < pad.left) bx = pad.left;
+        if (bx + tw + 12 > pad.left + chartW) bx = pad.left + chartW - tw - 12;
+        const by = Math.max(pad.top, hy - 24);
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(bx, by, tw + 12, 18, 4) : ctx.rect(bx, by, tw + 12, 18);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(tooltipText, bx + 6, by + 9);
+      }
+
+      ctx.restore();
+    }
+
+    // 캔버스 인터랙션(마우스/터치) 리스너 등록
+    function setupChartInteractions(canvas, isWide = false) {
+      if (!canvas) return;
+      let isTracking = false;
+
+      const getHoverIndexFromEvent = (e) => {
+        if (!gpxCourseData || !gpxCourseData.points || !gpxCourseData.points.length) return null;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
+        const padLeft = 38;
+        const padRight = 14;
+        const chartW = Math.max(10, rect.width - padLeft - padRight);
+        const mouseX = clientX - rect.left;
+        const ratio = Math.max(0, Math.min(1, (mouseX - padLeft) / chartW));
+        const targetDist = ratio * gpxCourseData.totalDist;
+
+        // 이진 탐색으로 가장 가까운 포인트 찾기
+        const pts = gpxCourseData.points;
+        let low = 0, high = pts.length - 1;
+        while (low < high) {
+          const mid = Math.floor((low + high) / 2);
+          if (pts[mid].distCum < targetDist) low = mid + 1;
+          else high = mid;
+        }
+        let best = low;
+        if (best > 0 && Math.abs(pts[best - 1].distCum - targetDist) < Math.abs(pts[best].distCum - targetDist)) {
+          best = best - 1;
+        }
+        return best;
+      };
+
+      const syncHover = (idx) => {
+        if (idx === null || !gpxCourseData) return;
+        const pt = gpxCourseData.points[idx];
+        const distKmText = (pt.distCum / 1000).toFixed(1) + 'km';
+        const eleText = Math.round(pt.smoothEle) + 'm';
+        const slopeText = (pt.slope >= 0 ? '+' : '') + pt.slope.toFixed(1) + '%';
+        const tipStr = `${distKmText} · 고도 ${eleText} (경사 ${slopeText})`;
+
+        const tipSide = document.getElementById('gpxChartHoverTip');
+        const tipWide = document.getElementById('wideChartHoverTip');
+        if (tipSide) tipSide.textContent = tipStr;
+        if (tipWide) tipWide.textContent = tipStr;
+
+        updateGpxHoverMarker(pt, distKmText, eleText, slopeText);
+
+        const canvasSide = document.getElementById('gpxElevationCanvas');
+        const canvasWide = document.getElementById('gpxWideElevationCanvas');
+        renderElevationChart(canvasSide, gpxCourseData, idx);
+        if (isWideElevationOpen && canvasWide) {
+          renderElevationChart(canvasWide, gpxCourseData, idx);
+        }
+      };
+
+      const clearHover = () => {
+        if (!gpxCourseData) return;
+        const tipSide = document.getElementById('gpxChartHoverTip');
+        const tipWide = document.getElementById('wideChartHoverTip');
+        if (tipSide) tipSide.textContent = '그래프를 터치하거나 마우스를 올려보세요';
+        if (tipWide) tipWide.textContent = '마우스나 터치로 지점을 탐색하세요';
+
+        hideGpxHoverMarker();
+
+        const canvasSide = document.getElementById('gpxElevationCanvas');
+        const canvasWide = document.getElementById('gpxWideElevationCanvas');
+        renderElevationChart(canvasSide, gpxCourseData, null);
+        if (isWideElevationOpen && canvasWide) {
+          renderElevationChart(canvasWide, gpxCourseData, null);
+        }
+      };
+
+      canvas.addEventListener('mousemove', (e) => {
+        const idx = getHoverIndexFromEvent(e);
+        if (idx !== null) syncHover(idx);
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        if (!isTracking) clearHover();
+      });
+
+      canvas.addEventListener('touchstart', (e) => {
+        isTracking = true;
+        const idx = getHoverIndexFromEvent(e);
+        if (idx !== null) syncHover(idx);
+      }, { passive: true });
+
+      canvas.addEventListener('touchmove', (e) => {
+        const idx = getHoverIndexFromEvent(e);
+        if (idx !== null) syncHover(idx);
+      }, { passive: true });
+
+      canvas.addEventListener('touchend', () => {
+        isTracking = false;
+        clearHover();
+      });
+
+      canvas.addEventListener('click', (e) => {
+        const idx = getHoverIndexFromEvent(e);
+        if (idx !== null && gpxCourseData && map) {
+          const pt = gpxCourseData.points[idx];
+          map.panTo(pt.latLng);
+        }
+      });
+    }
+
+    // GPX 코스 불러오기 메인 함수
     async function loadGpxCourse(file) {
       if (!map) {
         setStatus('지도가 준비된 후 GPX 파일을 열어주세요.', 'error');
@@ -1552,25 +2242,58 @@
         if (version !== courseLoadVersion) return;
         if (xml.querySelector('parsererror')) throw new Error('GPX 파일 형식을 확인해주세요.');
         if (xml.documentElement.localName !== 'gpx') throw new Error('GPX 형식의 파일을 선택해주세요.');
+
+        // trkseg, rte, trk, trkpt 탐색
+        let segments = Array.from(xml.getElementsByTagNameNS('*', 'trkseg'));
+        if (!segments.length) segments = Array.from(xml.getElementsByTagNameNS('*', 'rte'));
+        if (!segments.length) segments = Array.from(xml.getElementsByTagNameNS('*', 'trk'));
+
+        let groups = segments;
+        if (!groups.length) {
+          const directPoints = Array.from(xml.getElementsByTagNameNS('*', 'trkpt'));
+          if (directPoints.length) groups = [{ points: directPoints, localName: 'trkseg' }];
+        }
+
         const bounds = new kakao.maps.LatLngBounds();
-        const segments = Array.from(xml.getElementsByTagNameNS('*', 'trkseg'));
-        const groups = segments.length ? segments : Array.from(xml.getElementsByTagNameNS('*', 'rte'));
-        const paths = groups.map(group => {
-          const tag = group.localName === 'rte' ? 'rtept' : 'trkpt';
-          return Array.from(group.getElementsByTagNameNS('*', tag)).map(point => {
+        const parsedSegments = groups.map(group => {
+          let pointEls;
+          if (group.points) {
+            pointEls = group.points;
+          } else {
+            const tag = group.localName === 'rte' ? 'rtept' : 'trkpt';
+            pointEls = Array.from(group.getElementsByTagNameNS('*', tag));
+          }
+
+          return pointEls.map(point => {
             const latText = point.getAttribute('lat');
             const lonText = point.getAttribute('lon');
             const lat = Number(latText), lng = Number(lonText);
             if (!latText?.trim() || !lonText?.trim() || !Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
               throw new Error('GPX 파일에 잘못된 좌표가 있습니다.');
             }
-            return new kakao.maps.LatLng(lat, lng);
+            const eleEl = point.getElementsByTagNameNS('*', 'ele')[0];
+            const eleVal = eleEl && eleEl.textContent.trim() !== '' ? Number(eleEl.textContent) : null;
+            const ele = Number.isFinite(eleVal) ? eleVal : null;
+
+            return { lat, lng, ele, latLng: new kakao.maps.LatLng(lat, lng) };
           });
-        }).filter(path => path.length >= 2);
-        if (!paths.length) throw new Error('GPX 파일에 표시할 경로가 없습니다.');
+        }).filter(seg => seg.length >= 2);
+
+        if (!parsedSegments.length) throw new Error('GPX 파일에 표시할 유효한 경로가 없습니다.');
+
+        // 기존 지도 코스 그래픽스 초기화
         coursePolylines.forEach(line => line.setMap(null));
-        coursePolylines = paths.map(path => {
-          path.forEach(position => bounds.extend(position));
+        if (gpxStartMarker) { gpxStartMarker.setMap(null); gpxStartMarker = null; }
+        if (gpxEndMarker) { gpxEndMarker.setMap(null); gpxEndMarker = null; }
+        if (gpxPeakMarker) { gpxPeakMarker.setMap(null); gpxPeakMarker = null; }
+        if (gpxHoverMarker) { gpxHoverMarker.setMap(null); gpxHoverMarker = null; }
+
+        // 지도 폴리라인 생성
+        coursePolylines = parsedSegments.map(seg => {
+          const path = seg.map(p => {
+            bounds.extend(p.latLng);
+            return p.latLng;
+          });
           return new kakao.maps.Polyline({
             map: courseMap, path, strokeWeight: 5, strokeColor: '#16a34a',
             strokeOpacity: 0.9, strokeStyle: 'solid', zIndex: 5
@@ -1578,32 +2301,201 @@
         });
         courseBounds = bounds;
         courseMap.setBounds(bounds, 50);
-        document.getElementById('gpxCourseInfo').textContent = `${file.name} · ${paths.length}개 구간 · ${paths.reduce((sum, path) => sum + path.length, 0).toLocaleString()}개 좌표`;
+
+        // 전체 포인트 평탄화 및 누적 거리 계산
+        const allPoints = [];
+        let cumDist = 0;
+        parsedSegments.forEach((seg, sIdx) => {
+          seg.forEach((p, pIdx) => {
+            let delta = 0;
+            if (pIdx > 0) {
+              delta = calcHaversineDistance(seg[pIdx - 1].lat, seg[pIdx - 1].lng, p.lat, p.lng);
+            } else if (allPoints.length > 0) {
+              const last = allPoints[allPoints.length - 1];
+              delta = calcHaversineDistance(last.lat, last.lng, p.lat, p.lng);
+            }
+            cumDist += delta;
+            allPoints.push({
+              lat: p.lat,
+              lng: p.lng,
+              ele: p.ele,
+              latLng: p.latLng,
+              distDelta: delta,
+              distCum: cumDist,
+              segmentIndex: sIdx
+            });
+          });
+        });
+
+        const totalDist = cumDist;
+        const validEles = allPoints.filter(p => p.ele !== null);
+        const hasElevation = validEles.length >= Math.min(2, allPoints.length * 0.5);
+
+        let elevationGain = 0;
+        let elevationLoss = 0;
+        let maxEle = 0;
+        let minEle = 0;
+        let peakIdx = 0;
+
+        if (hasElevation) {
+          // 결측치 보간
+          let lastKnown = validEles[0].ele;
+          for (let i = 0; i < allPoints.length; i++) {
+            if (allPoints[i].ele === null) allPoints[i].ele = lastKnown;
+            else lastKnown = allPoints[i].ele;
+          }
+
+          // 고도 스무딩 (노이즈 필터링)
+          const smoothed = smoothElevationArray(allPoints);
+          allPoints.forEach((p, i) => { p.smoothEle = smoothed[i]; });
+
+          // 획득고도 & 누적하강
+          for (let i = 1; i < allPoints.length; i++) {
+            const diff = allPoints[i].smoothEle - allPoints[i - 1].smoothEle;
+            if (diff > 0.05) elevationGain += diff;
+            else if (diff < -0.05) elevationLoss += Math.abs(diff);
+          }
+
+          // 최고 / 최저 고도
+          maxEle = -Infinity;
+          minEle = Infinity;
+          allPoints.forEach((p, idx) => {
+            if (p.ele > maxEle) { maxEle = p.ele; peakIdx = idx; }
+            if (p.ele < minEle) { minEle = p.ele; }
+          });
+
+          // 경사도 계산
+          const slopes = computePointSlopes(allPoints);
+          allPoints.forEach((p, i) => { p.slope = slopes[i]; });
+        } else {
+          allPoints.forEach(p => { p.smoothEle = 0; p.slope = 0; });
+        }
+
+        // 출발/도착 및 최고점 핀 오버레이
+        gpxStartMarker = createGpxPinOverlay(allPoints[0].latLng, '🏁 출발', 'start');
+        gpxEndMarker = createGpxPinOverlay(allPoints[allPoints.length - 1].latLng, '🎯 도착', 'end');
+        if (hasElevation) {
+          gpxPeakMarker = createGpxPinOverlay(allPoints[peakIdx].latLng, `⛰️ 최고 ${Math.round(maxEle)}m`, 'peak');
+        }
+
+        // 통계 UI 업데이트
+        const distKm = totalDist / 1000;
+        document.getElementById('gpxDistance').textContent = distKm >= 1 ? `${distKm.toFixed(1)} km` : `${Math.round(totalDist)} m`;
+        document.getElementById('gpxAscent').textContent = hasElevation ? `+${Math.round(elevationGain).toLocaleString()} m` : '정보 없음';
+        document.getElementById('gpxDescent').textContent = hasElevation ? `-${Math.round(elevationLoss).toLocaleString()} m` : '정보 없음';
+        document.getElementById('gpxElevationMinMax').textContent = hasElevation ? `${Math.round(maxEle)}m / ${Math.round(minEle)}m` : '정보 없음';
+        document.getElementById('gpxEstimatedTime').textContent = estimateRideTime(totalDist, hasElevation ? elevationGain : 0);
+
+        document.getElementById('gpxStatsContainer').style.display = 'block';
+        document.getElementById('gpxElevationBox').style.display = hasElevation ? 'block' : 'none';
+        document.getElementById('gpxNoElevationAlert').style.display = hasElevation ? 'none' : 'block';
+        document.getElementById('gpxChartMaxDistLabel').textContent = `${distKm.toFixed(1)} km`;
+
+        document.getElementById('gpxCourseInfo').textContent = `${file.name} · ${parsedSegments.length}개 구간 · ${allPoints.length.toLocaleString()}개 좌표`;
         document.getElementById('btnClearGpx').disabled = false;
-        setStatus(`${file.name} 코스를 초록색으로 표시했습니다.`, 'success');
+
+        // 차트 데이터 저장 및 렌더링
+        gpxCourseData = {
+          points: allPoints,
+          totalDist,
+          elevationGain,
+          elevationLoss,
+          maxEle,
+          minEle,
+          hasElevation,
+          peakIdx,
+          fileName: file.name
+        };
+
+        const sideCanvas = document.getElementById('gpxElevationCanvas');
+        if (hasElevation && sideCanvas) {
+          renderElevationChart(sideCanvas, gpxCourseData);
+        }
+        if (isWideElevationOpen && hasElevation) {
+          const wideCanvas = document.getElementById('gpxWideElevationCanvas');
+          renderElevationChart(wideCanvas, gpxCourseData);
+        }
+
+        const gainMsg = hasElevation ? `, 획득고도 +${Math.round(elevationGain)}m` : '';
+        setStatus(`${file.name} 코스를 로드했습니다 (총 거리 ${distKm.toFixed(1)}km${gainMsg}).`, 'success');
       } catch (error) {
         if (version === courseLoadVersion) setStatus(`GPX 코스 로딩 실패: ${error.message}`, 'error');
       }
     }
 
+    // GPX UI 이벤트 리스너 바인딩
     const btnOpenGpx = document.getElementById('btnOpenGpx');
     if (btnOpenGpx) {
       btnOpenGpx.onclick = () => document.getElementById('gpxFileInput').click();
     }
-    document.getElementById('gpxFileInput').onchange = (event) => {
-      const file = event.target.files[0];
-      event.target.value = '';
-      if (file) loadGpxCourse(file);
-    };
-    document.getElementById('btnClearGpx').onclick = () => {
-      ++courseLoadVersion;
-      coursePolylines.forEach(line => line.setMap(null));
-      coursePolylines = [];
-      courseBounds = null;
-      document.getElementById('gpxCourseInfo').textContent = 'GPX 파일을 열면 지도에 초록색 경로로 표시됩니다.';
-      document.getElementById('btnClearGpx').disabled = true;
-      setStatus('GPX 코스를 지웠습니다.');
-    };
+    const gpxFileInput = document.getElementById('gpxFileInput');
+    if (gpxFileInput) {
+      gpxFileInput.onchange = (event) => {
+        const file = event.target.files[0];
+        event.target.value = '';
+        if (file) loadGpxCourse(file);
+      };
+    }
+    const btnClearGpx = document.getElementById('btnClearGpx');
+    if (btnClearGpx) {
+      btnClearGpx.onclick = () => {
+        ++courseLoadVersion;
+        coursePolylines.forEach(line => line.setMap(null));
+        coursePolylines = [];
+        courseBounds = null;
+        if (gpxStartMarker) { gpxStartMarker.setMap(null); gpxStartMarker = null; }
+        if (gpxEndMarker) { gpxEndMarker.setMap(null); gpxEndMarker = null; }
+        if (gpxPeakMarker) { gpxPeakMarker.setMap(null); gpxPeakMarker = null; }
+        if (gpxHoverMarker) { gpxHoverMarker.setMap(null); gpxHoverMarker = null; }
+        gpxCourseData = null;
+
+        document.getElementById('gpxStatsContainer').style.display = 'none';
+        document.getElementById('mapWideElevationPanel').style.display = 'none';
+        isWideElevationOpen = false;
+
+        document.getElementById('gpxCourseInfo').textContent = 'GPX 파일을 열면 지도 경로와 획득고도, 고도 프로필이 표시됩니다.';
+        document.getElementById('btnClearGpx').disabled = true;
+        setStatus('GPX 코스를 지웠습니다.');
+      };
+    }
+
+    // 와이드 고도 패널 토글 버튼
+    const btnToggleWideElevation = document.getElementById('btnToggleWideElevation');
+    const mapWideElevationPanel = document.getElementById('mapWideElevationPanel');
+    const btnCloseWideElevation = document.getElementById('btnCloseWideElevation');
+
+    if (btnToggleWideElevation && mapWideElevationPanel) {
+      btnToggleWideElevation.onclick = () => {
+        if (!gpxCourseData || !gpxCourseData.hasElevation) return;
+        isWideElevationOpen = !isWideElevationOpen;
+        mapWideElevationPanel.style.display = isWideElevationOpen ? 'flex' : 'none';
+        if (isWideElevationOpen) {
+          const wideCanvas = document.getElementById('gpxWideElevationCanvas');
+          setTimeout(() => renderElevationChart(wideCanvas, gpxCourseData), 30);
+        }
+      };
+    }
+    if (btnCloseWideElevation && mapWideElevationPanel) {
+      btnCloseWideElevation.onclick = () => {
+        isWideElevationOpen = false;
+        mapWideElevationPanel.style.display = 'none';
+      };
+    }
+
+    // 차트 인터랙션 바인딩
+    setupChartInteractions(document.getElementById('gpxElevationCanvas'));
+    setupChartInteractions(document.getElementById('gpxWideElevationCanvas'), true);
+
+    // 윈도우 리사이즈 시 차트 재렌더링
+    window.addEventListener('resize', () => {
+      if (!gpxCourseData || !gpxCourseData.hasElevation) return;
+      const sideCanvas = document.getElementById('gpxElevationCanvas');
+      renderElevationChart(sideCanvas, gpxCourseData);
+      if (isWideElevationOpen) {
+        const wideCanvas = document.getElementById('gpxWideElevationCanvas');
+        renderElevationChart(wideCanvas, gpxCourseData);
+      }
+    });
 
     // 3. 브라우저 GPS 위치 가져오기
     function requestInitialGps(silent = true) {
