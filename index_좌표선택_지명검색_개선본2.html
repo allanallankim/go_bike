@@ -544,11 +544,30 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      max-height: 128px; /* 약 3개 노출 */
+      overflow-y: scroll; /* 우측 스크롤바 */
+      padding-right: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--slate-300) var(--slate-100);
+    }
+    .preset-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .preset-list::-webkit-scrollbar-track {
+      background: var(--slate-100);
+      border-radius: 4px;
+    }
+    .preset-list::-webkit-scrollbar-thumb {
+      background: var(--slate-300);
+      border-radius: 4px;
+    }
+    .preset-list::-webkit-scrollbar-thumb:hover {
+      background: var(--slate-400);
     }
     .preset-btn {
       background: var(--slate-50);
       border: 1px solid var(--slate-200);
-      padding: 8px 12px;
+      padding: 7px 10px;
       border-radius: var(--radius-sm);
       font-size: 12px;
       font-weight: 600;
@@ -559,16 +578,52 @@
       justify-content: space-between;
       align-items: center;
       transition: all 0.15s;
+      flex-shrink: 0;
+      min-height: 36px;
+      box-sizing: border-box;
     }
     .preset-btn:hover {
       background: #ffffff;
       border-color: var(--primary);
       color: var(--primary);
-      transform: translateX(3px);
+      transform: translateX(2px);
+    }
+    .preset-main {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .preset-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 18px;
+      padding: 0 4px;
+      background: var(--slate-200);
+      color: var(--slate-700);
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .preset-btn:hover .preset-num {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .preset-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .preset-tag {
       font-size: 11px;
       color: var(--slate-400);
+      white-space: nowrap;
+      margin-left: 8px;
+      flex-shrink: 0;
     }
 
     /* 상태 알림창 */
@@ -876,10 +931,16 @@
         <!-- 경로 분석 & 통계 카드 -->
         <section class="card" aria-label="GPX 코스 불러오기">
           <h2 style="font-size:14px; margin-bottom:10px;">GPX 코스</h2>
-          <label for="gpxFileInput" style="font-size:12px;">지도에 표시할 GPX 파일 선택</label>
-          <input id="gpxFileInput" type="file" accept=".gpx,application/gpx+xml" style="display:block; width:100%; margin:10px 0;" />
-          <p id="gpxCourseInfo" class="weather-message" aria-live="polite">파일을 선택하면 초록색 경로로 표시됩니다.</p>
-          <button id="btnClearGpx" type="button" class="btn-quick" style="margin-top:8px;" disabled>코스 지우기</button>
+          <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+            <input id="gpxFileInput" type="file" accept=".gpx,application/gpx+xml" style="display:none;" />
+            <button id="btnOpenGpx" type="button" class="btn-quick" style="display:inline-flex; align-items:center; gap:5px; padding:6px 12px; font-size:12px;">
+              📁 <span>파일 열기</span>
+            </button>
+            <button id="btnClearGpx" type="button" class="btn-quick" style="display:inline-flex; align-items:center; gap:5px; padding:6px 12px; font-size:12px;" disabled>
+              🗑️ <span>코스 지우기</span>
+            </button>
+          </div>
+          <p id="gpxCourseInfo" class="weather-message" aria-live="polite">GPX 파일을 열면 지도에 초록색 경로로 표시됩니다.</p>
         </section>
 
         <section class="card route-weather" aria-label="출발지와 도착지 8시간 날씨">
@@ -939,19 +1000,357 @@
 
         <!-- 인기 추천 라이딩 코스 -->
         <div class="preset-section">
-          <div class="preset-title">🌟 추천 라이딩 코스 (원클릭 테스트)</div>
+          <div class="preset-title">🌟 추천 라이딩 코스 (50선)</div>
           <div class="preset-list">
-            <button class="preset-btn" data-sname="여의도 한강공원" data-slat="37.5284" data-slng="126.9328" data-ename="반포 한강공원" data-elat="37.5098" data-elng="126.9952">
-              <span>여의도 한강공원 ➔ 반포 한강공원</span>
+            <button type="button" class="preset-btn" data-sname="여의도 한강공원" data-slat="37.5284" data-slng="126.9328" data-ename="반포 한강공원" data-elat="37.5098" data-elng="126.9952" title="여의도 한강공원 ➔ 반포 한강공원">
+              <div class="preset-main">
+                <span class="preset-num">01</span>
+                <span class="preset-name">여의도 한강공원 ➔ 반포 한강공원</span>
+              </div>
               <span class="preset-tag">한강 코스 · 약 6.8km</span>
             </button>
-            <button class="preset-btn" data-sname="판교역" data-slat="37.3948" data-slng="127.1112" data-ename="정자역" data-elat="37.3669" data-elng="127.1084">
-              <span>판교역 ➔ 정자역 (탄천 자전거길)</span>
+            <button type="button" class="preset-btn" data-sname="판교역" data-slat="37.3948" data-slng="127.1112" data-ename="정자역" data-elat="37.3669" data-elng="127.1084" title="판교역 ➔ 정자역">
+              <div class="preset-main">
+                <span class="preset-num">02</span>
+                <span class="preset-name">판교역 ➔ 정자역</span>
+              </div>
               <span class="preset-tag">탄천 코스 · 약 3.2km</span>
             </button>
-            <button class="preset-btn" data-sname="뚝섬유원지" data-slat="37.5312" data-slng="127.0667" data-ename="서울숲" data-elat="37.5444" data-elng="127.0374">
-              <span>뚝섬유원지 ➔ 서울숲</span>
+            <button type="button" class="preset-btn" data-sname="뚝섬유원지" data-slat="37.5312" data-slng="127.0667" data-ename="서울숲" data-elat="37.5444" data-elng="127.0374" title="뚝섬유원지 ➔ 서울숲">
+              <div class="preset-main">
+                <span class="preset-num">03</span>
+                <span class="preset-name">뚝섬유원지 ➔ 서울숲</span>
+              </div>
               <span class="preset-tag">도심 생태 코스 · 약 2.9km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="반포 한강공원" data-slat="37.5098" data-slng="126.9952" data-ename="잠실 종합운동장" data-elat="37.5148" data-elng="127.0736" title="반포 한강공원 ➔ 잠실 종합운동장">
+              <div class="preset-main">
+                <span class="preset-num">04</span>
+                <span class="preset-name">반포 한강공원 ➔ 잠실 종합운동장</span>
+              </div>
+              <span class="preset-tag">한강 남단 · 약 7.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="아라서해갑문" data-slat="37.5583" data-slng="126.6025" data-ename="아라한강갑문" data-elat="37.6001" data-elng="126.8042" title="아라서해갑문 ➔ 아라한강갑문">
+              <div class="preset-main">
+                <span class="preset-num">05</span>
+                <span class="preset-name">아라서해갑문 ➔ 아라한강갑문</span>
+              </div>
+              <span class="preset-tag">아라뱃길 종주 · 약 21km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="여의도 한강공원" data-slat="37.5284" data-slng="126.9328" data-ename="아라한강갑문" data-elat="37.6001" data-elng="126.8042" title="여의도 한강공원 ➔ 아라한강갑문">
+              <div class="preset-main">
+                <span class="preset-num">06</span>
+                <span class="preset-name">여의도 한강공원 ➔ 아라한강갑문</span>
+              </div>
+              <span class="preset-tag">한강 하류 · 약 14.2km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="광나루 한강공원" data-slat="37.5501" data-slng="127.1215" data-ename="팔당역" data-elat="37.5276" data-elng="127.2439" title="광나루 한강공원 ➔ 팔당역">
+              <div class="preset-main">
+                <span class="preset-num">07</span>
+                <span class="preset-name">광나루 한강공원 ➔ 팔당역</span>
+              </div>
+              <span class="preset-tag">한강-팔당 · 약 13.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="팔당역" data-slat="37.5276" data-slng="127.2439" data-ename="양수역" data-elat="37.5452" data-elng="127.3275" title="팔당역 ➔ 양수역">
+              <div class="preset-main">
+                <span class="preset-num">08</span>
+                <span class="preset-name">팔당역 ➔ 양수역</span>
+              </div>
+              <span class="preset-tag">남한강 철길 · 약 9.8km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="양수역" data-slat="37.5452" data-slng="127.3275" data-ename="이포보" data-elat="37.3941" data-elng="127.5312" title="양수역 ➔ 이포보">
+              <div class="preset-main">
+                <span class="preset-num">09</span>
+                <span class="preset-name">양수역 ➔ 이포보</span>
+              </div>
+              <span class="preset-tag">남한강변 · 약 30km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="밝은광장 인증센터" data-slat="37.5552" data-slng="127.3117" data-ename="샛터삼거리" data-elat="37.6698" data-elng="127.3592" title="밝은광장 인증센터 ➔ 샛터삼거리">
+              <div class="preset-main">
+                <span class="preset-num">10</span>
+                <span class="preset-name">밝은광장 인증센터 ➔ 샛터삼거리</span>
+              </div>
+              <span class="preset-tag">북한강 코스 · 약 15km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="샛터삼거리" data-slat="37.6698" data-slng="127.3592" data-ename="가평역" data-elat="37.8187" data-elng="127.5113" title="샛터삼거리 ➔ 가평역">
+              <div class="preset-main">
+                <span class="preset-num">11</span>
+                <span class="preset-name">샛터삼거리 ➔ 가평역</span>
+              </div>
+              <span class="preset-tag">청평-가평길 · 약 25km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="가평역" data-slat="37.8187" data-slng="127.5113" data-ename="춘천 신매대교" data-elat="37.9152" data-elng="127.6974" title="가평역 ➔ 춘천 신매대교">
+              <div class="preset-main">
+                <span class="preset-num">12</span>
+                <span class="preset-name">가평역 ➔ 춘천 신매대교</span>
+              </div>
+              <span class="preset-tag">북한강 종주 · 약 30km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="춘천역" data-slat="37.8847" data-slng="127.7171" data-ename="의암호 스카이워크" data-elat="37.8436" data-elng="127.6987" title="춘천역 ➔ 의암호 스카이워크">
+              <div class="preset-main">
+                <span class="preset-num">13</span>
+                <span class="preset-name">춘천역 ➔ 의암호 스카이워크</span>
+              </div>
+              <span class="preset-tag">호반 라이딩 · 약 7.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="국립중앙박물관" data-slat="37.5238" data-slng="126.9805" data-ename="남산서울타워" data-elat="37.5512" data-elng="126.9882" title="국립중앙박물관 ➔ 남산서울타워">
+              <div class="preset-main">
+                <span class="preset-num">14</span>
+                <span class="preset-name">국립중앙박물관 ➔ 남산서울타워</span>
+              </div>
+              <span class="preset-tag">남산 업힐 · 약 4.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="창의문(자하문)" data-slat="37.5926" data-slng="126.9664" data-ename="북악팔각정" data-elat="37.6015" data-elng="126.9798" title="창의문(자하문) ➔ 북악팔각정">
+              <div class="preset-main">
+                <span class="preset-num">15</span>
+                <span class="preset-name">창의문(자하문) ➔ 북악팔각정</span>
+              </div>
+              <span class="preset-tag">북악스카이웨이 · 약 2.7km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="안양천 합수부" data-slat="37.5457" data-slng="126.8863" data-ename="안양 예술공원" data-elat="37.4278" data-elng="126.9272" title="안양천 합수부 ➔ 안양 예술공원">
+              <div class="preset-main">
+                <span class="preset-num">16</span>
+                <span class="preset-name">안양천 합수부 ➔ 안양 예술공원</span>
+              </div>
+              <span class="preset-tag">안양천 자전거길 · 약 17.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="중랑천 합수부" data-slat="37.5455" data-slng="127.0381" data-ename="의정부역" data-elat="37.7385" data-elng="127.0459" title="중랑천 합수부 ➔ 의정부역">
+              <div class="preset-main">
+                <span class="preset-num">17</span>
+                <span class="preset-name">중랑천 합수부 ➔ 의정부역</span>
+              </div>
+              <span class="preset-tag">중랑천 종주 · 약 23km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="탄천 합수부" data-slat="37.5132" data-slng="127.0694" data-ename="용인 기흥호수공원" data-elat="37.2348" data-elng="127.0984" title="탄천 합수부 ➔ 용인 기흥호수공원">
+              <div class="preset-main">
+                <span class="preset-num">18</span>
+                <span class="preset-name">탄천 합수부 ➔ 용인 기흥호수공원</span>
+              </div>
+              <span class="preset-tag">탄천 풀코스 · 약 34km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="인덕원역" data-slat="37.4018" data-slng="126.9765" data-ename="의왕 백운호수" data-elat="37.3762" data-elng="127.0062" title="인덕원역 ➔ 의왕 백운호수">
+              <div class="preset-main">
+                <span class="preset-num">19</span>
+                <span class="preset-name">인덕원역 ➔ 의왕 백운호수</span>
+              </div>
+              <span class="preset-tag">학의천 코스 · 약 4.8km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="행주산성" data-slat="37.5952" data-slng="126.8184" data-ename="일산 호수공원" data-elat="37.6583" data-elng="126.7642" title="행주산성 ➔ 일산 호수공원">
+              <div class="preset-main">
+                <span class="preset-num">20</span>
+                <span class="preset-name">행주산성 ➔ 일산 호수공원</span>
+              </div>
+              <span class="preset-tag">평화누리길 · 약 11.2km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="여의도 한강공원" data-slat="37.5284" data-slng="126.9328" data-ename="행주산성" data-elat="37.5952" data-elng="126.8184" title="여의도 한강공원 ➔ 행주산성">
+              <div class="preset-main">
+                <span class="preset-num">21</span>
+                <span class="preset-name">여의도 한강공원 ➔ 행주산성</span>
+              </div>
+              <span class="preset-tag">한강 북서부 · 약 12km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="잠원 한강공원" data-slat="37.5222" data-slng="127.0142" data-ename="하남 미사경정공원" data-elat="37.5588" data-elng="127.2084" title="잠원 한강공원 ➔ 하남 미사경정공원">
+              <div class="preset-main">
+                <span class="preset-num">22</span>
+                <span class="preset-name">잠원 한강공원 ➔ 하남 미사경정공원</span>
+              </div>
+              <span class="preset-tag">한강 동부 · 약 19km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="송도 센트럴파크" data-slat="37.3925" data-slng="126.6392" data-ename="소래포구" data-elat="37.4005" data-elng="126.7358" title="송도 센트럴파크 ➔ 소래포구">
+              <div class="preset-main">
+                <span class="preset-num">23</span>
+                <span class="preset-name">송도 센트럴파크 ➔ 소래포구</span>
+              </div>
+              <span class="preset-tag">해안 자전거길 · 약 11km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="오이도 빨강등대" data-slat="37.3402" data-slng="126.6668" data-ename="대부도 방아머리해변" data-elat="37.2934" data-elng="126.5862" title="오이도 빨강등대 ➔ 대부도 방아머리해변">
+              <div class="preset-main">
+                <span class="preset-num">24</span>
+                <span class="preset-name">오이도 빨강등대 ➔ 대부도 방아머리해변</span>
+              </div>
+              <span class="preset-tag">시화방조제길 · 약 12.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="수원 화성행궁" data-slat="37.2828" data-slng="127.0152" data-ename="광교호수공원" data-elat="37.2838" data-elng="127.0658" title="수원 화성행궁 ➔ 광교호수공원">
+              <div class="preset-main">
+                <span class="preset-num">25</span>
+                <span class="preset-name">수원 화성행궁 ➔ 광교호수공원</span>
+              </div>
+              <span class="preset-tag">수원 문화/호수 · 약 6.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="양평역" data-slat="37.4916" data-slng="127.4875" data-ename="이포보" data-elat="37.3941" data-elng="127.5312" title="양평역 ➔ 이포보">
+              <div class="preset-main">
+                <span class="preset-num">26</span>
+                <span class="preset-name">양평역 ➔ 이포보</span>
+              </div>
+              <span class="preset-tag">남한강 자전거길 · 약 14.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="퇴촌사거리" data-slat="37.4722" data-slng="127.3245" data-ename="분원리 백자관" data-elat="37.5028" data-elng="127.3524" title="퇴촌사거리 ➔ 분원리 백자관">
+              <div class="preset-main">
+                <span class="preset-num">27</span>
+                <span class="preset-name">퇴촌사거리 ➔ 분원리 백자관</span>
+              </div>
+              <span class="preset-tag">분원리 낙타등 · 약 6.2km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="양수역" data-slat="37.5452" data-slng="127.3275" data-ename="유명산 삼거리" data-elat="37.5958" data-elng="127.4925" title="양수역 ➔ 유명산 삼거리">
+              <div class="preset-main">
+                <span class="preset-num">28</span>
+                <span class="preset-name">양수역 ➔ 유명산 삼거리</span>
+              </div>
+              <span class="preset-tag">동부 힐클라임 · 약 24km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="충주 탄금대" data-slat="36.9935" data-slng="127.9002" data-ename="수안보온천" data-elat="36.8488" data-elng="127.9942" title="충주 탄금대 ➔ 수안보온천">
+              <div class="preset-main">
+                <span class="preset-num">29</span>
+                <span class="preset-name">충주 탄금대 ➔ 수안보온천</span>
+              </div>
+              <span class="preset-tag">새재자전거길 1 · 약 28km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="수안보온천" data-slat="36.8488" data-slng="127.9942" data-ename="이화령 휴게소" data-elat="36.7828" data-elng="128.0298" title="수안보온천 ➔ 이화령 휴게소">
+              <div class="preset-main">
+                <span class="preset-num">30</span>
+                <span class="preset-name">수안보온천 ➔ 이화령 휴게소</span>
+              </div>
+              <span class="preset-tag">새재자전거길 2 · 약 19km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="이화령 휴게소" data-slat="36.7828" data-slng="128.0298" data-ename="문경온천" data-elat="36.7612" data-elng="128.0772" title="이화령 휴게소 ➔ 문경온천">
+              <div class="preset-main">
+                <span class="preset-num">31</span>
+                <span class="preset-name">이화령 휴게소 ➔ 문경온천</span>
+              </div>
+              <span class="preset-tag">새재자전거길 3 · 약 12km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="대전 엑스포다리" data-slat="36.3768" data-slng="127.3872" data-ename="대청댐광장" data-elat="36.4782" data-elng="127.4775" title="대전 엑스포다리 ➔ 대청댐광장">
+              <div class="preset-main">
+                <span class="preset-num">32</span>
+                <span class="preset-name">대전 엑스포다리 ➔ 대청댐광장</span>
+              </div>
+              <span class="preset-tag">갑천-금강길 · 약 18km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="세종호수공원" data-slat="36.4982" data-slng="127.2715" data-ename="공주 공산성" data-elat="36.4625" data-elng="127.1264" title="세종호수공원 ➔ 공주 공산성">
+              <div class="preset-main">
+                <span class="preset-num">33</span>
+                <span class="preset-name">세종호수공원 ➔ 공주 공산성</span>
+              </div>
+              <span class="preset-tag">금강 종주 · 약 22km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="공주 공산성" data-slat="36.4625" data-slng="127.1264" data-ename="부여 백제보" data-elat="36.3122" data-elng="126.9152" title="공주 공산성 ➔ 부여 백제보">
+              <div class="preset-main">
+                <span class="preset-num">34</span>
+                <span class="preset-name">공주 공산성 ➔ 부여 백제보</span>
+              </div>
+              <span class="preset-tag">백제 역사문화길 · 약 26km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="부여 백제보" data-slat="36.3122" data-slng="126.9152" data-ename="군산 금강하구둑" data-elat="35.9995" data-elng="126.7588" title="부여 백제보 ➔ 군산 금강하구둑">
+              <div class="preset-main">
+                <span class="preset-num">35</span>
+                <span class="preset-name">부여 백제보 ➔ 군산 금강하구둑</span>
+              </div>
+              <span class="preset-tag">금강 종주 하류 · 약 45km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="담양 메타세쿼이아길" data-slat="35.3242" data-slng="127.0035" data-ename="광주 첨단 쌍암공원" data-elat="35.2215" data-elng="126.8522" title="담양 메타세쿼이아길 ➔ 광주 첨단 쌍암공원">
+              <div class="preset-main">
+                <span class="preset-num">36</span>
+                <span class="preset-name">담양 메타세쿼이아길 ➔ 광주 첨단 쌍암공원</span>
+              </div>
+              <span class="preset-tag">영산강 상류 · 약 21km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="광주 승촌보" data-slat="35.0935" data-slng="126.7918" data-ename="나주 영산포등대" data-elat="35.0182" data-elng="126.7215" title="광주 승촌보 ➔ 나주 영산포등대">
+              <div class="preset-main">
+                <span class="preset-num">37</span>
+                <span class="preset-name">광주 승촌보 ➔ 나주 영산포등대</span>
+              </div>
+              <span class="preset-tag">영산강 중류 · 약 14km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="나주 영산포등대" data-slat="35.0182" data-slng="126.7215" data-ename="목포 영산강하구둑" data-elat="34.7892" data-elng="126.4258" title="나주 영산포등대 ➔ 목포 영산강하구둑">
+              <div class="preset-main">
+                <span class="preset-num">38</span>
+                <span class="preset-name">나주 영산포등대 ➔ 목포 영산강하구둑</span>
+              </div>
+              <span class="preset-tag">영산강 종주 종점 · 약 36km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="구례 섬진강생태관" data-slat="35.2152" data-slng="127.4892" data-ename="하동 화개장터" data-elat="35.2325" data-elng="127.5815" title="구례 섬진강생태관 ➔ 하동 화개장터">
+              <div class="preset-main">
+                <span class="preset-num">39</span>
+                <span class="preset-name">구례 섬진강생태관 ➔ 하동 화개장터</span>
+              </div>
+              <span class="preset-tag">섬진강 벚꽃길 · 약 13km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="하동 화개장터" data-slat="35.2325" data-slng="127.5815" data-ename="광양 매화마을" data-elat="35.1582" data-elng="127.7088" title="하동 화개장터 ➔ 광양 매화마을">
+              <div class="preset-main">
+                <span class="preset-num">40</span>
+                <span class="preset-name">하동 화개장터 ➔ 광양 매화마을</span>
+              </div>
+              <span class="preset-tag">섬진강 매화길 · 약 17km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="상주 상풍교" data-slat="36.5165" data-slng="128.2612" data-ename="구미 낙단보" data-elat="36.3478" data-elng="128.3245" title="상주 상풍교 ➔ 구미 낙단보">
+              <div class="preset-main">
+                <span class="preset-num">41</span>
+                <span class="preset-name">상주 상풍교 ➔ 구미 낙단보</span>
+              </div>
+              <span class="preset-tag">낙동강 상류 · 약 24km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="대구 강정보 디아크" data-slat="35.8458" data-slng="128.4682" data-ename="달성보 인증센터" data-elat="35.7315" data-elng="128.4112" title="대구 강정보 디아크 ➔ 달성보 인증센터">
+              <div class="preset-main">
+                <span class="preset-num">42</span>
+                <span class="preset-name">대구 강정보 디아크 ➔ 달성보 인증센터</span>
+              </div>
+              <span class="preset-tag">낙동강 중류 · 약 16km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="부산 을숙도" data-slat="35.1052" data-slng="128.9432" data-ename="양산 물금 황산공원" data-elat="35.3142" data-elng="129.0068" title="부산 을숙도 ➔ 양산 물금 황산공원">
+              <div class="preset-main">
+                <span class="preset-num">43</span>
+                <span class="preset-name">부산 을숙도 ➔ 양산 물금 황산공원</span>
+              </div>
+              <span class="preset-tag">낙동강 하구 · 약 28km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="경주 보문관광단지" data-slat="35.8425" data-slng="129.2618" data-ename="경주 불국사" data-elat="35.7902" data-elng="129.3325" title="경주 보문관광단지 ➔ 경주 불국사">
+              <div class="preset-main">
+                <span class="preset-num">44</span>
+                <span class="preset-name">경주 보문관광단지 ➔ 경주 불국사</span>
+              </div>
+              <span class="preset-tag">신라 역사문화길 · 약 10.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="고성 통일전망대" data-slat="38.5638" data-slng="128.3752" data-ename="화진포 해수욕장" data-elat="38.4842" data-elng="128.4385" title="고성 통일전망대 ➔ 화진포 해수욕장">
+              <div class="preset-main">
+                <span class="preset-num">45</span>
+                <span class="preset-name">고성 통일전망대 ➔ 화진포 해수욕장</span>
+              </div>
+              <span class="preset-tag">동해안 최북단 · 약 12km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="속초 영랑호" data-slat="38.2178" data-slng="128.5832" data-ename="속초 청초호" data-elat="38.1995" data-elng="128.5888" title="속초 영랑호 ➔ 속초 청초호">
+              <div class="preset-main">
+                <span class="preset-num">46</span>
+                <span class="preset-name">속초 영랑호 ➔ 속초 청초호</span>
+              </div>
+              <span class="preset-tag">속초 호반 코스 · 약 5.5km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="강릉 경포호" data-slat="37.7982" data-slng="128.9052" data-ename="강릉 안목 커피거리" data-elat="37.7718" data-elng="128.9485" title="강릉 경포호 ➔ 강릉 안목 커피거리">
+              <div class="preset-main">
+                <span class="preset-num">47</span>
+                <span class="preset-name">강릉 경포호 ➔ 강릉 안목 커피거리</span>
+              </div>
+              <span class="preset-tag">경포-안목 해송길 · 약 6.8km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="제주 용두암" data-slat="33.5165" data-slng="126.5128" data-ename="애월 다락쉼터" data-elat="33.4568" data-elng="126.3112" title="제주 용두암 ➔ 애월 다락쉼터">
+              <div class="preset-main">
+                <span class="preset-num">48</span>
+                <span class="preset-name">제주 용두암 ➔ 애월 다락쉼터</span>
+              </div>
+              <span class="preset-tag">환상자전거길 1 · 약 21km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="제주 송악산" data-slat="33.2082" data-slng="126.2915" data-ename="서귀포 법환포구" data-elat="33.2375" data-elng="126.5142" title="제주 송악산 ➔ 서귀포 법환포구">
+              <div class="preset-main">
+                <span class="preset-num">49</span>
+                <span class="preset-name">제주 송악산 ➔ 서귀포 법환포구</span>
+              </div>
+              <span class="preset-tag">환상자전거길 남부 · 약 28km</span>
+            </button>
+            <button type="button" class="preset-btn" data-sname="제주 김녕해수욕장" data-slat="33.5572" data-slng="126.7435" data-ename="성산일출봉" data-elat="33.4588" data-elng="126.9382" title="제주 김녕해수욕장 ➔ 성산일출봉">
+              <div class="preset-main">
+                <span class="preset-num">50</span>
+                <span class="preset-name">제주 김녕해수욕장 ➔ 성산일출봉</span>
+              </div>
+              <span class="preset-tag">환상자전거길 동부 · 약 26km</span>
             </button>
           </div>
         </div>
@@ -1143,7 +1542,7 @@
 
     async function loadGpxCourse(file) {
       if (!map) {
-        setStatus('지도가 준비된 후 GPX 파일을 선택해주세요.', 'error');
+        setStatus('지도가 준비된 후 GPX 파일을 열어주세요.', 'error');
         return;
       }
       const version = ++courseLoadVersion;
@@ -1187,6 +1586,10 @@
       }
     }
 
+    const btnOpenGpx = document.getElementById('btnOpenGpx');
+    if (btnOpenGpx) {
+      btnOpenGpx.onclick = () => document.getElementById('gpxFileInput').click();
+    }
     document.getElementById('gpxFileInput').onchange = (event) => {
       const file = event.target.files[0];
       event.target.value = '';
@@ -1197,7 +1600,7 @@
       coursePolylines.forEach(line => line.setMap(null));
       coursePolylines = [];
       courseBounds = null;
-      document.getElementById('gpxCourseInfo').textContent = '파일을 선택하면 초록색 경로로 표시됩니다.';
+      document.getElementById('gpxCourseInfo').textContent = 'GPX 파일을 열면 지도에 초록색 경로로 표시됩니다.';
       document.getElementById('btnClearGpx').disabled = true;
       setStatus('GPX 코스를 지웠습니다.');
     };
@@ -1941,9 +2344,12 @@
       };
     });
 
-    // 추천 코스 프리셋 클릭
-    document.querySelectorAll('.preset-btn').forEach((btn) => {
-      btn.onclick = () => {
+    // 추천 코스 프리셋 클릭 (이벤트 위임)
+    const presetListEl = document.querySelector('.preset-list');
+    if (presetListEl) {
+      presetListEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('.preset-btn');
+        if (!btn) return;
         const sname = btn.dataset.sname;
         const slat = parseFloat(btn.dataset.slat);
         const slng = parseFloat(btn.dataset.slng);
@@ -1954,8 +2360,8 @@
         setStartPoint(sname, slat, slng);
         setEndPoint(ename, elat, elng);
         setStatus(`추천 코스 [${sname} ➔ ${ename}] 가 적용되었습니다.`, 'success');
-      };
-    });
+      });
+    }
 
     // 지도 상단 플로팅 툴바 이벤트
     // 1) 자전거 도로 오버레이 토글
