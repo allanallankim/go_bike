@@ -892,6 +892,43 @@
       display: block;
       cursor: crosshair;
     }
+    .gpx-slope-legend {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--slate-200);
+    }
+    .gpx-slope-legend-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--slate-700);
+      margin-bottom: 5px;
+    }
+    .gpx-slope-legend-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .gpx-slope-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--slate-600);
+      line-height: 1.3;
+    }
+    .gpx-slope-legend-item strong {
+      font-weight: 700;
+      color: var(--slate-800);
+    }
+    .gpx-slope-swatch {
+      flex: 0 0 auto;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
     .btn-mini-tool {
       background: #ffffff;
       border: 1px solid var(--slate-200);
@@ -1210,6 +1247,11 @@
                 <span style="color:var(--slate-400); font-size:10px;">0 km</span>
                 <span id="gpxChartHoverTip" class="gpx-elevation-hover-tip">그래프를 터치하거나 마우스를 올려보세요</span>
                 <span id="gpxChartMaxDistLabel" style="color:var(--slate-400); font-size:10px;">- km</span>
+              </div>
+              <!-- 경사도 색상 범례 (GPX_SLOPE_GRADES로 채움) -->
+              <div class="gpx-slope-legend">
+                <div class="gpx-slope-legend-title">🎨 경사도 색상 구분</div>
+                <ul id="gpxSlopeLegendList" class="gpx-slope-legend-list"></ul>
               </div>
             </div>
 
@@ -1897,6 +1939,20 @@
       return slopes;
     }
 
+    // 경사도 구간 정의 (높은 경사부터, min% 이상이면 해당 구간)
+    const GPX_SLOPE_GRADES = [
+      { min: 12, color: '#dc2626', label: '극경사', range: '12% 이상' },
+      { min: 9, color: '#ea580c', label: '급경사', range: '9~12%' },
+      { min: 6, color: '#fb923c', label: '중경사', range: '6~9%' },
+      { min: 3, color: '#facc15', label: '완경사', range: '3~6%' },
+      { min: -3, color: '#4ade80', label: '평지', range: '-3~3%' },
+      { min: -Infinity, color: '#60a5fa', label: '내리막', range: '-3% 미만' }
+    ];
+
+    function getSlopeGrade(slope) {
+      return GPX_SLOPE_GRADES.find(g => slope >= g.min) || GPX_SLOPE_GRADES[GPX_SLOPE_GRADES.length - 1];
+    }
+
     // 라이딩 소요 시간 예측 (평지 20km/h + 획득고도 100m당 6분)
     function estimateRideTime(distanceMeters, elevationGainMeters) {
       const distKm = distanceMeters / 1000;
@@ -2025,21 +2081,39 @@
         return;
       }
 
-      // 2. 그라데이션 영역 채움
-      const gradient = ctx.createLinearGradient(0, pad.top, 0, pad.top + chartH);
-      gradient.addColorStop(0, 'rgba(5, 150, 105, 0.4)');
-      gradient.addColorStop(0.85, 'rgba(5, 150, 105, 0.08)');
-      gradient.addColorStop(1, 'rgba(5, 150, 105, 0.01)');
+      // 2. 경사도별 색상 막대 (막대 구간의 평균 경사로 색상 결정, 막대당 최소 100m)
+      let segIdx = 0;
+      const eleAtDist = (d) => {
+        while (segIdx < pts.length - 2 && pts[segIdx + 1].distCum < d) segIdx++;
+        const a = pts[segIdx];
+        const b = pts[Math.min(segIdx + 1, pts.length - 1)];
+        const span = b.distCum - a.distCum;
+        if (span <= 0) return a.smoothEle;
+        const t = Math.max(0, Math.min(1, (d - a.distCum) / span));
+        return a.smoothEle + (b.smoothEle - a.smoothEle) * t;
+      };
 
-      ctx.beginPath();
-      ctx.moveTo(getX(pts[0].distCum), pad.top + chartH);
-      for (let i = 0; i < pts.length; i++) {
-        ctx.lineTo(getX(pts[i].distCum), getY(pts[i].smoothEle));
+      const barCount = Math.max(1, Math.min(Math.floor(chartW / 3), Math.floor(totalDist / 100)));
+      const barDist = totalDist / barCount;
+      const barW = chartW / barCount;
+      const barGap = barW >= 3 ? 0.6 : 0;
+      const baseY = pad.top + chartH;
+      let prevEle = eleAtDist(0);
+      for (let b = 0; b < barCount; b++) {
+        const nextEle = eleAtDist((b + 1) * barDist);
+        const slope = ((nextEle - prevEle) / barDist) * 100;
+        const x0 = pad.left + b * barW + barGap / 2;
+        const x1 = pad.left + (b + 1) * barW - barGap / 2;
+        ctx.beginPath();
+        ctx.moveTo(x0, baseY);
+        ctx.lineTo(x0, getY(prevEle));
+        ctx.lineTo(x1, getY(nextEle));
+        ctx.lineTo(x1, baseY);
+        ctx.closePath();
+        ctx.fillStyle = getSlopeGrade(slope).color;
+        ctx.fill();
+        prevEle = nextEle;
       }
-      ctx.lineTo(getX(pts[pts.length - 1].distCum), pad.top + chartH);
-      ctx.closePath();
-      ctx.fillStyle = gradient;
-      ctx.fill();
 
       // 3. 고도 라인
       ctx.beginPath();
@@ -2049,8 +2123,8 @@
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
-      ctx.strokeStyle = '#059669';
-      ctx.lineWidth = 2.2;
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1.6;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.stroke();
@@ -2092,8 +2166,8 @@
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // 현재 포인트 원
-        ctx.fillStyle = '#059669';
+        // 현재 포인트 원 (해당 지점 경사 색상)
+        ctx.fillStyle = getSlopeGrade(hp.slope).color;
         ctx.beginPath();
         ctx.arc(hx, hy, 4.5, 0, Math.PI * 2);
         ctx.fill();
@@ -2425,6 +2499,16 @@
       } catch (error) {
         if (version === courseLoadVersion) setStatus(`GPX 코스 로딩 실패: ${error.message}`, 'error');
       }
+    }
+
+    // 경사도 색상 범례 렌더링 (낮은 경사 → 높은 경사 순)
+    const gpxSlopeLegendList = document.getElementById('gpxSlopeLegendList');
+    if (gpxSlopeLegendList) {
+      gpxSlopeLegendList.innerHTML = GPX_SLOPE_GRADES.slice().reverse().map(g => `
+        <li class="gpx-slope-legend-item">
+          <span class="gpx-slope-swatch" style="background:${g.color};"></span>
+          <span><strong>${g.label}</strong> ${g.range}</span>
+        </li>`).join('');
     }
 
     // GPX UI 이벤트 리스너 바인딩
