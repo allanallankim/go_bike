@@ -1774,7 +1774,7 @@
     let gpxZoomRange = null;        // 확대 구간 { start, end } (누적거리 m)
     let gpxZoomDrag = null;         // 드래그 중인 선택 { canvas, fromDist, toDist, startClientX }
     let isZoomSelectMode = false;
-    let gpxZoomPolylines = [];      // 지도 위 선택 구간(파란색) 폴리라인
+    let gpxZoomPolylines = [];      // 지도 위 선택 구간(경사도 색상) 폴리라인
 
     // DOM 엘리먼트 캐싱
     const $ = (id) => document.getElementById(id);
@@ -2119,7 +2119,7 @@
       updateGpxZoomUi();
     }
 
-    // 지도에 선택 구간을 파란색 폴리라인으로 표시하고 해당 구간으로 이동
+    // 지도에 선택 구간을 경사도 색상 폴리라인으로 표시하고 해당 구간으로 이동
     function updateGpxZoomHighlight() {
       gpxZoomPolylines.forEach(line => line.setMap(null));
       gpxZoomPolylines = [];
@@ -2129,22 +2129,45 @@
       const iS = findPointIndexAtDist(pts, gpxZoomRange.start);
       const iE = findPointIndexAtDist(pts, gpxZoomRange.end);
       const bounds = new kakao.maps.LatLngBounds();
-      const paths = [];
-      let current = [];
-      for (let i = iS; i <= iE; i++) {
-        if (current.length && pts[i].segmentIndex !== pts[i - 1].segmentIndex) {
-          paths.push(current);
-          current = [];
-        }
-        current.push(pts[i].latLng);
-        bounds.extend(pts[i].latLng);
-      }
-      paths.push(current);
 
-      gpxZoomPolylines = paths.filter(path => path.length >= 2).map(path => new kakao.maps.Polyline({
-        map, path, strokeWeight: 6, strokeColor: '#2563eb',
-        strokeOpacity: 0.95, strokeStyle: 'solid', zIndex: 6
-      }));
+      // 트랙 구간별 전체 경로 (어두운 외곽선용) + 같은 경사 등급끼리 묶은 색상 경로
+      const outlinePaths = [];
+      const colorRuns = [];
+      let outline = [];
+      let run = null;
+      for (let i = iS; i <= iE; i++) {
+        const pt = pts[i];
+        const color = getSlopeGrade(pt.slope).color;
+        if (i > iS && pt.segmentIndex !== pts[i - 1].segmentIndex) {
+          outlinePaths.push(outline);
+          outline = [];
+          run = null;
+        }
+        outline.push(pt.latLng);
+        bounds.extend(pt.latLng);
+
+        if (!run || run.color !== color) {
+          // 이전 run의 마지막 점에서 이어 그려 색 경계에 틈이 없도록 함
+          const prev = run ? run.path[run.path.length - 1] : null;
+          run = { color, path: prev ? [prev] : [] };
+          colorRuns.push(run);
+        }
+        run.path.push(pt.latLng);
+      }
+      outlinePaths.push(outline);
+
+      outlinePaths.filter(path => path.length >= 2).forEach(path => {
+        gpxZoomPolylines.push(new kakao.maps.Polyline({
+          map, path, strokeWeight: 9, strokeColor: '#1e293b',
+          strokeOpacity: 0.85, strokeStyle: 'solid', zIndex: 6
+        }));
+      });
+      colorRuns.filter(r => r.path.length >= 2).forEach(r => {
+        gpxZoomPolylines.push(new kakao.maps.Polyline({
+          map, path: r.path, strokeWeight: 6, strokeColor: r.color,
+          strokeOpacity: 1, strokeStyle: 'solid', zIndex: 7
+        }));
+      });
       if (iE > iS) map.setBounds(bounds, 60);
     }
 
