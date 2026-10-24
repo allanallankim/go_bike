@@ -948,6 +948,14 @@
       background: var(--slate-100);
       border-color: var(--slate-300);
     }
+    .btn-mini-tool.active {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+    .zoom-selecting canvas {
+      cursor: col-resize;
+    }
 
     /* 지도 하단 플로팅 와이드 고도 패널 */
     .map-wide-elevation-panel {
@@ -1234,7 +1242,9 @@
             <div id="gpxElevationBox" class="gpx-elevation-box">
               <div class="gpx-elevation-header">
                 <span class="gpx-elevation-title">📈 코스 고도 프로필</span>
-                <div style="display:flex; align-items:center; gap:6px;">
+                <div style="display:flex; align-items:center; gap:4px;">
+                  <button type="button" class="btn-mini-tool js-gpx-zoom-select" title="그래프를 드래그해 구간 확대">🔍 구간 확대</button>
+                  <button type="button" class="btn-mini-tool js-gpx-zoom-reset" title="전체 코스 보기" style="display:none;">↺ 전체</button>
                   <button id="btnToggleWideElevation" type="button" class="btn-mini-tool" title="지도 위로 고도 프로필 보기">
                     ⛶ 지도위로
                   </button>
@@ -1244,7 +1254,7 @@
                 <canvas id="gpxElevationCanvas"></canvas>
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:11px;">
-                <span style="color:var(--slate-400); font-size:10px;">0 km</span>
+                <span id="gpxChartMinDistLabel" style="color:var(--slate-400); font-size:10px;">0 km</span>
                 <span id="gpxChartHoverTip" class="gpx-elevation-hover-tip">그래프를 터치하거나 마우스를 올려보세요</span>
                 <span id="gpxChartMaxDistLabel" style="color:var(--slate-400); font-size:10px;">- km</span>
               </div>
@@ -1708,7 +1718,11 @@
             <span style="font-size:12px; font-weight:800; color:var(--slate-800);">📈 GPX 코스 전체 고도 프로필</span>
             <span id="wideChartHoverTip" style="font-size:11px; color:var(--primary); font-weight:600;">마우스나 터치로 지점을 탐색하세요</span>
           </div>
-          <button id="btnCloseWideElevation" class="btn-close-wide" type="button" title="닫기">✕</button>
+          <div style="display:flex; align-items:center; gap:4px;">
+            <button type="button" class="btn-mini-tool js-gpx-zoom-select" title="그래프를 드래그해 구간 확대">🔍 구간 확대</button>
+            <button type="button" class="btn-mini-tool js-gpx-zoom-reset" title="전체 코스 보기" style="display:none;">↺ 전체</button>
+            <button id="btnCloseWideElevation" class="btn-close-wide" type="button" title="닫기">✕</button>
+          </div>
         </div>
         <div class="wide-canvas-wrap">
           <canvas id="gpxWideElevationCanvas"></canvas>
@@ -1757,6 +1771,10 @@
     let gpxPeakMarker = null;
     let gpxHoverMarker = null;
     let isWideElevationOpen = false;
+    let gpxZoomRange = null;        // 확대 구간 { start, end } (누적거리 m)
+    let gpxZoomDrag = null;         // 드래그 중인 선택 { canvas, fromDist, toDist, startClientX }
+    let isZoomSelectMode = false;
+    let gpxZoomPolylines = [];      // 지도 위 선택 구간(파란색) 폴리라인
 
     // DOM 엘리먼트 캐싱
     const $ = (id) => document.getElementById(id);
@@ -2018,6 +2036,146 @@
       }
     }
 
+    const GPX_CHART_PAD = { top: 16, right: 14, bottom: 22, left: 38 };
+
+    // 차트에 표시할 거리 범위 (확대 시 선택 구간, 아니면 전체)
+    function getChartViewRange(courseData) {
+      if (gpxZoomRange) return gpxZoomRange;
+      return { start: 0, end: courseData.totalDist || 1 };
+    }
+
+    // 누적거리 d에 가장 가까운 포인트 인덱스 (이진 탐색)
+    function findPointIndexAtDist(pts, d) {
+      let low = 0, high = pts.length - 1;
+      while (low < high) {
+        const mid = Math.floor((low + high) / 2);
+        if (pts[mid].distCum < d) low = mid + 1;
+        else high = mid;
+      }
+      if (low > 0 && Math.abs(pts[low - 1].distCum - d) < Math.abs(pts[low].distCum - d)) {
+        return low - 1;
+      }
+      return low;
+    }
+
+    function rerenderElevationCharts(hoverIndex = null) {
+      if (!gpxCourseData || !gpxCourseData.hasElevation) return;
+      renderElevationChart(document.getElementById('gpxElevationCanvas'), gpxCourseData, hoverIndex);
+      if (isWideElevationOpen) {
+        renderElevationChart(document.getElementById('gpxWideElevationCanvas'), gpxCourseData, hoverIndex);
+      }
+    }
+
+    // 호버가 없을 때 안내 문구 (구간 선택 모드 / 확대 구간 요약 / 기본)
+    function getDefaultChartTip(isWide) {
+      if (isZoomSelectMode) return '그래프를 드래그해 확대할 구간을 선택하세요';
+      if (gpxZoomRange && gpxCourseData) {
+        const pts = gpxCourseData.points;
+        const iS = findPointIndexAtDist(pts, gpxZoomRange.start);
+        const iE = findPointIndexAtDist(pts, gpxZoomRange.end);
+        let gain = 0;
+        for (let i = iS + 1; i <= iE; i++) {
+          const diff = pts[i].smoothEle - pts[i - 1].smoothEle;
+          if (diff > 0.05) gain += diff;
+        }
+        const fromKm = (gpxZoomRange.start / 1000).toFixed(1);
+        const toKm = (gpxZoomRange.end / 1000).toFixed(1);
+        const lenKm = ((gpxZoomRange.end - gpxZoomRange.start) / 1000).toFixed(1);
+        return `🔍 ${fromKm}~${toKm}km 구간 (${lenKm}km · +${Math.round(gain)}m)`;
+      }
+      return isWide ? '마우스나 터치로 지점을 탐색하세요' : '그래프를 터치하거나 마우스를 올려보세요';
+    }
+
+    // 구간 확대 관련 버튼/라벨/안내문 갱신
+    function updateGpxZoomUi() {
+      document.querySelectorAll('.js-gpx-zoom-select').forEach(btn => {
+        btn.classList.toggle('active', isZoomSelectMode);
+        btn.textContent = isZoomSelectMode ? '✕ 선택 취소' : '🔍 구간 확대';
+      });
+      document.querySelectorAll('.js-gpx-zoom-reset').forEach(btn => {
+        btn.style.display = gpxZoomRange ? 'inline-flex' : 'none';
+      });
+      document.querySelectorAll('.gpx-canvas-wrap, .wide-canvas-wrap').forEach(wrap => {
+        wrap.classList.toggle('zoom-selecting', isZoomSelectMode);
+      });
+
+      const minLabel = document.getElementById('gpxChartMinDistLabel');
+      const maxLabel = document.getElementById('gpxChartMaxDistLabel');
+      if (gpxCourseData) {
+        const view = getChartViewRange(gpxCourseData);
+        if (minLabel) minLabel.textContent = `${(view.start / 1000).toFixed(1).replace(/\.0$/, '')} km`;
+        if (maxLabel) maxLabel.textContent = `${(view.end / 1000).toFixed(1)} km`;
+      }
+
+      const tipSide = document.getElementById('gpxChartHoverTip');
+      const tipWide = document.getElementById('wideChartHoverTip');
+      if (tipSide) tipSide.textContent = getDefaultChartTip(false);
+      if (tipWide) tipWide.textContent = getDefaultChartTip(true);
+    }
+
+    function setZoomSelectMode(on) {
+      isZoomSelectMode = on;
+      if (!on) gpxZoomDrag = null;
+      updateGpxZoomUi();
+    }
+
+    // 지도에 선택 구간을 파란색 폴리라인으로 표시하고 해당 구간으로 이동
+    function updateGpxZoomHighlight() {
+      gpxZoomPolylines.forEach(line => line.setMap(null));
+      gpxZoomPolylines = [];
+      if (!gpxZoomRange || !gpxCourseData || !map) return;
+
+      const pts = gpxCourseData.points;
+      const iS = findPointIndexAtDist(pts, gpxZoomRange.start);
+      const iE = findPointIndexAtDist(pts, gpxZoomRange.end);
+      const bounds = new kakao.maps.LatLngBounds();
+      const paths = [];
+      let current = [];
+      for (let i = iS; i <= iE; i++) {
+        if (current.length && pts[i].segmentIndex !== pts[i - 1].segmentIndex) {
+          paths.push(current);
+          current = [];
+        }
+        current.push(pts[i].latLng);
+        bounds.extend(pts[i].latLng);
+      }
+      paths.push(current);
+
+      gpxZoomPolylines = paths.filter(path => path.length >= 2).map(path => new kakao.maps.Polyline({
+        map, path, strokeWeight: 6, strokeColor: '#2563eb',
+        strokeOpacity: 0.95, strokeStyle: 'solid', zIndex: 6
+      }));
+      if (iE > iS) map.setBounds(bounds, 60);
+    }
+
+    function applyGpxZoom(fromDist, toDist) {
+      if (!gpxCourseData) return;
+      const total = gpxCourseData.totalDist;
+      let start = Math.max(0, Math.min(fromDist, toDist));
+      let end = Math.min(total, Math.max(fromDist, toDist));
+      // 최소 50m 구간 보장
+      if (end - start < 50) {
+        const mid = (start + end) / 2;
+        start = Math.max(0, Math.min(total - 50, mid - 25));
+        end = Math.min(total, start + 50);
+      }
+      gpxZoomRange = { start, end };
+      setZoomSelectMode(false);
+      updateGpxZoomHighlight();
+      updateGpxZoomUi();
+      hideGpxHoverMarker();
+      rerenderElevationCharts();
+    }
+
+    // 확대 상태 초기화 (전체 보기 / 코스 교체 / 지우기)
+    function resetGpxZoom() {
+      gpxZoomRange = null;
+      setZoomSelectMode(false);
+      updateGpxZoomHighlight();
+      updateGpxZoomUi();
+      rerenderElevationCharts();
+    }
+
     // Canvas 고도 프로필 차트 렌더러
     function renderElevationChart(canvas, courseData, hoverIndex = null) {
       if (!canvas || !courseData || !courseData.points || !courseData.points.length) return;
@@ -2036,13 +2194,37 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.scale(dpr, dpr);
 
-      const pad = { top: 16, right: 14, bottom: 22, left: 38 };
+      const pad = GPX_CHART_PAD;
       const chartW = Math.max(10, cssW - pad.left - pad.right);
       const chartH = Math.max(10, cssH - pad.top - pad.bottom);
 
-      const totalDist = courseData.totalDist || 1;
+      const pts = courseData.points;
+      const view = getChartViewRange(courseData);
+      const viewSpan = (view.end - view.start) || 1;
+      // 화면에 보이는 포인트 인덱스 범위 (양끝 1개씩 여유)
+      const firstIdx = Math.max(0, findPointIndexAtDist(pts, view.start) - 1);
+      const lastIdx = Math.min(pts.length - 1, findPointIndexAtDist(pts, view.end) + 1);
+
       let minY = courseData.minEle;
       let maxY = courseData.maxEle;
+      let peakIdx = courseData.peakIdx;
+      if (gpxZoomRange) {
+        // 확대 구간 내 최고/최저 고도로 Y축 재설정
+        minY = Infinity;
+        maxY = -Infinity;
+        for (let i = firstIdx; i <= lastIdx; i++) {
+          const p = pts[i];
+          if (p.distCum < view.start || p.distCum > view.end) continue;
+          if (p.ele > maxY) { maxY = p.ele; peakIdx = i; }
+          if (p.ele < minY) minY = p.ele;
+        }
+        if (!Number.isFinite(minY)) {
+          minY = Math.min(pts[firstIdx].smoothEle, pts[lastIdx].smoothEle);
+          maxY = Math.max(pts[firstIdx].smoothEle, pts[lastIdx].smoothEle);
+          peakIdx = -1;
+        }
+      }
+      const peakEle = maxY;
       if (maxY - minY < 20) {
         maxY = minY + 25;
       }
@@ -2051,7 +2233,7 @@
       const rangeMax = maxY + padY;
       const rangeDiff = rangeMax - rangeMin || 1;
 
-      const getX = (dist) => pad.left + (dist / totalDist) * chartW;
+      const getX = (dist) => pad.left + ((dist - view.start) / viewSpan) * chartW;
       const getY = (ele) => pad.top + (1 - (ele - rangeMin) / rangeDiff) * chartH;
 
       // 1. 그리드 라인 & Y축 눈금 (3선)
@@ -2075,14 +2257,14 @@
       }
       ctx.setLineDash([]);
 
-      const pts = courseData.points;
-      if (!pts.length) {
-        ctx.restore();
-        return;
-      }
+      // 차트 영역 밖으로 그려지지 않도록 클리핑
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad.left, 0, chartW, cssH);
+      ctx.clip();
 
-      // 2. 경사도별 색상 막대 (막대 구간의 평균 경사로 색상 결정, 막대당 최소 100m)
-      let segIdx = 0;
+      // 2. 경사도별 색상 막대 (막대 구간의 평균 경사로 색상 결정, 막대당 최소 100m / 확대 시 25m)
+      let segIdx = firstIdx;
       const eleAtDist = (d) => {
         while (segIdx < pts.length - 2 && pts[segIdx + 1].distCum < d) segIdx++;
         const a = pts[segIdx];
@@ -2093,14 +2275,15 @@
         return a.smoothEle + (b.smoothEle - a.smoothEle) * t;
       };
 
-      const barCount = Math.max(1, Math.min(Math.floor(chartW / 3), Math.floor(totalDist / 100)));
-      const barDist = totalDist / barCount;
+      const minBarDist = gpxZoomRange ? 25 : 100;
+      const barCount = Math.max(1, Math.min(Math.floor(chartW / 3), Math.floor(viewSpan / minBarDist)));
+      const barDist = viewSpan / barCount;
       const barW = chartW / barCount;
       const barGap = barW >= 3 ? 0.6 : 0;
       const baseY = pad.top + chartH;
-      let prevEle = eleAtDist(0);
+      let prevEle = eleAtDist(view.start);
       for (let b = 0; b < barCount; b++) {
-        const nextEle = eleAtDist((b + 1) * barDist);
+        const nextEle = eleAtDist(view.start + (b + 1) * barDist);
         const slope = ((nextEle - prevEle) / barDist) * 100;
         const x0 = pad.left + b * barW + barGap / 2;
         const x1 = pad.left + (b + 1) * barW - barGap / 2;
@@ -2117,10 +2300,10 @@
 
       // 3. 고도 라인
       ctx.beginPath();
-      for (let i = 0; i < pts.length; i++) {
+      for (let i = firstIdx; i <= lastIdx; i++) {
         const x = getX(pts[i].distCum);
         const y = getY(pts[i].smoothEle);
-        if (i === 0) ctx.moveTo(x, y);
+        if (i === firstIdx) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
       ctx.strokeStyle = '#334155';
@@ -2129,9 +2312,9 @@
       ctx.lineJoin = 'round';
       ctx.stroke();
 
-      // 4. 최고 고도 지점(Peak) 마커 표시
-      if (courseData.peakIdx >= 0 && courseData.peakIdx < pts.length) {
-        const peakPt = pts[courseData.peakIdx];
+      // 4. 최고 고도 지점(Peak) 마커 표시 (확대 시 구간 내 최고점)
+      if (peakIdx >= 0 && peakIdx < pts.length) {
+        const peakPt = pts[peakIdx];
         const px = getX(peakPt.distCum);
         const py = getY(peakPt.smoothEle);
 
@@ -2147,8 +2330,25 @@
         ctx.font = 'bold 9px "Plus Jakarta Sans", Pretendard, sans-serif';
         ctx.textAlign = px > cssW - 50 ? 'right' : (px < 50 ? 'left' : 'center');
         ctx.fillStyle = '#b45309';
-        ctx.fillText(`▲${Math.round(courseData.maxEle)}m`, px, Math.max(10, py - 7));
+        ctx.fillText(`▲${Math.round(peakEle)}m`, px, Math.max(10, py - 7));
       }
+
+      // 드래그 중인 확대 선택 영역 표시
+      if (gpxZoomDrag && gpxZoomDrag.canvas === canvas) {
+        const sx0 = getX(Math.min(gpxZoomDrag.fromDist, gpxZoomDrag.toDist));
+        const sx1 = getX(Math.max(gpxZoomDrag.fromDist, gpxZoomDrag.toDist));
+        ctx.fillStyle = 'rgba(37, 99, 235, 0.18)';
+        ctx.fillRect(sx0, pad.top, sx1 - sx0, chartH);
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(sx0, pad.top);
+        ctx.lineTo(sx0, pad.top + chartH);
+        ctx.moveTo(sx1, pad.top);
+        ctx.lineTo(sx1, pad.top + chartH);
+        ctx.stroke();
+      }
+      ctx.restore();
 
       // 5. 호버 상태 인터랙션
       if (hoverIndex !== null && hoverIndex >= 0 && hoverIndex < pts.length) {
@@ -2206,31 +2406,26 @@
     function setupChartInteractions(canvas, isWide = false) {
       if (!canvas) return;
       let isTracking = false;
+      let suppressClick = false;
+
+      const getClientX = (e) => {
+        if (e.touches && e.touches[0]) return e.touches[0].clientX;
+        if (e.changedTouches && e.changedTouches[0]) return e.changedTouches[0].clientX;
+        return e.clientX;
+      };
+
+      // 이벤트 위치를 현재 보기 범위 기준 누적거리(m)로 변환
+      const getDistFromEvent = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const chartW = Math.max(10, rect.width - GPX_CHART_PAD.left - GPX_CHART_PAD.right);
+        const ratio = Math.max(0, Math.min(1, (getClientX(e) - rect.left - GPX_CHART_PAD.left) / chartW));
+        const view = getChartViewRange(gpxCourseData);
+        return view.start + ratio * (view.end - view.start);
+      };
 
       const getHoverIndexFromEvent = (e) => {
         if (!gpxCourseData || !gpxCourseData.points || !gpxCourseData.points.length) return null;
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX;
-        const padLeft = 38;
-        const padRight = 14;
-        const chartW = Math.max(10, rect.width - padLeft - padRight);
-        const mouseX = clientX - rect.left;
-        const ratio = Math.max(0, Math.min(1, (mouseX - padLeft) / chartW));
-        const targetDist = ratio * gpxCourseData.totalDist;
-
-        // 이진 탐색으로 가장 가까운 포인트 찾기
-        const pts = gpxCourseData.points;
-        let low = 0, high = pts.length - 1;
-        while (low < high) {
-          const mid = Math.floor((low + high) / 2);
-          if (pts[mid].distCum < targetDist) low = mid + 1;
-          else high = mid;
-        }
-        let best = low;
-        if (best > 0 && Math.abs(pts[best - 1].distCum - targetDist) < Math.abs(pts[best].distCum - targetDist)) {
-          best = best - 1;
-        }
-        return best;
+        return findPointIndexAtDist(gpxCourseData.points, getDistFromEvent(e));
       };
 
       const syncHover = (idx) => {
@@ -2247,31 +2442,57 @@
         if (tipWide) tipWide.textContent = tipStr;
 
         updateGpxHoverMarker(pt, distKmText, eleText, slopeText);
-
-        const canvasSide = document.getElementById('gpxElevationCanvas');
-        const canvasWide = document.getElementById('gpxWideElevationCanvas');
-        renderElevationChart(canvasSide, gpxCourseData, idx);
-        if (isWideElevationOpen && canvasWide) {
-          renderElevationChart(canvasWide, gpxCourseData, idx);
-        }
+        rerenderElevationCharts(idx);
       };
 
       const clearHover = () => {
         if (!gpxCourseData) return;
         const tipSide = document.getElementById('gpxChartHoverTip');
         const tipWide = document.getElementById('wideChartHoverTip');
-        if (tipSide) tipSide.textContent = '그래프를 터치하거나 마우스를 올려보세요';
-        if (tipWide) tipWide.textContent = '마우스나 터치로 지점을 탐색하세요';
+        if (tipSide) tipSide.textContent = getDefaultChartTip(false);
+        if (tipWide) tipWide.textContent = getDefaultChartTip(true);
 
         hideGpxHoverMarker();
+        rerenderElevationCharts(null);
+      };
 
-        const canvasSide = document.getElementById('gpxElevationCanvas');
-        const canvasWide = document.getElementById('gpxWideElevationCanvas');
-        renderElevationChart(canvasSide, gpxCourseData, null);
-        if (isWideElevationOpen && canvasWide) {
-          renderElevationChart(canvasWide, gpxCourseData, null);
+      // 구간 확대 드래그
+      const beginDrag = (e) => {
+        if (!isZoomSelectMode || !gpxCourseData) return false;
+        const d = getDistFromEvent(e);
+        gpxZoomDrag = { canvas, fromDist: d, toDist: d, startClientX: getClientX(e) };
+        return true;
+      };
+      const isDraggingHere = () => gpxZoomDrag && gpxZoomDrag.canvas === canvas;
+      const updateDrag = (e) => {
+        gpxZoomDrag.toDist = getDistFromEvent(e);
+        rerenderElevationCharts(getHoverIndexFromEvent(e));
+      };
+      const finishDrag = (e) => {
+        const drag = gpxZoomDrag;
+        gpxZoomDrag = null;
+        drag.toDist = getDistFromEvent(e);
+        suppressClick = true;
+        setTimeout(() => { suppressClick = false; }, 0);
+        // 8px 미만 이동은 클릭으로 보고 선택 모드 유지
+        if (Math.abs(getClientX(e) - drag.startClientX) >= 8) {
+          applyGpxZoom(drag.fromDist, drag.toDist);
+        } else {
+          rerenderElevationCharts();
         }
       };
+
+      canvas.addEventListener('mousedown', (e) => {
+        if (beginDrag(e)) e.preventDefault();
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (isDraggingHere()) updateDrag(e);
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (isDraggingHere()) finishDrag(e);
+      });
 
       canvas.addEventListener('mousemove', (e) => {
         const idx = getHoverIndexFromEvent(e);
@@ -2279,26 +2500,30 @@
       });
 
       canvas.addEventListener('mouseleave', () => {
-        if (!isTracking) clearHover();
+        if (!isTracking && !isDraggingHere()) clearHover();
       });
 
       canvas.addEventListener('touchstart', (e) => {
         isTracking = true;
+        beginDrag(e);
         const idx = getHoverIndexFromEvent(e);
         if (idx !== null) syncHover(idx);
       }, { passive: true });
 
       canvas.addEventListener('touchmove', (e) => {
+        if (isDraggingHere()) updateDrag(e);
         const idx = getHoverIndexFromEvent(e);
         if (idx !== null) syncHover(idx);
       }, { passive: true });
 
-      canvas.addEventListener('touchend', () => {
+      canvas.addEventListener('touchend', (e) => {
         isTracking = false;
+        if (isDraggingHere()) finishDrag(e);
         clearHover();
       });
 
       canvas.addEventListener('click', (e) => {
+        if (suppressClick || isZoomSelectMode) return;
         const idx = getHoverIndexFromEvent(e);
         if (idx !== null && gpxCourseData && map) {
           const pt = gpxCourseData.points[idx];
@@ -2365,6 +2590,10 @@
         if (gpxEndMarker) { gpxEndMarker.setMap(null); gpxEndMarker = null; }
         if (gpxPeakMarker) { gpxPeakMarker.setMap(null); gpxPeakMarker = null; }
         if (gpxHoverMarker) { gpxHoverMarker.setMap(null); gpxHoverMarker = null; }
+        gpxZoomRange = null;
+        gpxZoomDrag = null;
+        isZoomSelectMode = false;
+        updateGpxZoomHighlight();
 
         // 지도 폴리라인 생성
         coursePolylines = parsedSegments.map(seg => {
@@ -2484,6 +2713,7 @@
           peakIdx,
           fileName: file.name
         };
+        updateGpxZoomUi();
 
         const sideCanvas = document.getElementById('gpxElevationCanvas');
         if (hasElevation && sideCanvas) {
@@ -2535,6 +2765,7 @@
         if (gpxEndMarker) { gpxEndMarker.setMap(null); gpxEndMarker = null; }
         if (gpxPeakMarker) { gpxPeakMarker.setMap(null); gpxPeakMarker = null; }
         if (gpxHoverMarker) { gpxHoverMarker.setMap(null); gpxHoverMarker = null; }
+        resetGpxZoom();
         gpxCourseData = null;
 
         document.getElementById('gpxStatsContainer').style.display = 'none';
@@ -2569,6 +2800,18 @@
         mapWideElevationPanel.style.display = 'none';
       };
     }
+
+    // 구간 확대 / 전체 보기 버튼 (사이드바 · 와이드 패널 공용)
+    document.querySelectorAll('.js-gpx-zoom-select').forEach(btn => {
+      btn.onclick = () => {
+        if (!gpxCourseData || !gpxCourseData.hasElevation) return;
+        setZoomSelectMode(!isZoomSelectMode);
+        rerenderElevationCharts();
+      };
+    });
+    document.querySelectorAll('.js-gpx-zoom-reset').forEach(btn => {
+      btn.onclick = () => resetGpxZoom();
+    });
 
     // 차트 인터랙션 바인딩
     setupChartInteractions(document.getElementById('gpxElevationCanvas'));
